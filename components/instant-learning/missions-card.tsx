@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, memo } from "react"
 import { CheckCircle2, Circle, Lightbulb, ChevronDown } from "lucide-react"
 
 interface MissionsCardProps {
@@ -9,7 +9,7 @@ interface MissionsCardProps {
   hint?: string
 }
 
-export function MissionsCard({ targetClasses, appliedClasses, hint }: MissionsCardProps) {
+function MissionsCardOriginal({ targetClasses, appliedClasses, hint }: MissionsCardProps) {
   const [showHint, setShowHint] = useState(false)
 
   return (
@@ -71,3 +71,6 @@ export function MissionsCard({ targetClasses, appliedClasses, hint }: MissionsCa
     </div>
   )
 }
+
+export const MissionsCard = memo(MissionsCardOriginal);
+MissionsCard.displayName = "MissionsCard";

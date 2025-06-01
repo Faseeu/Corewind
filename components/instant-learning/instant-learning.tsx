@@ -1,14 +1,21 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { LearningHeader } from "./learning-header"
 import { TaskHeader } from "./task-header"
 import { MissionsCard } from "./missions-card"
 import { ComponentPreview } from "./component-preview"
 import { ClassInput } from "./class-input"
 import { ContinueButton } from "./continue-button"
-import { SuccessModal } from "./success-modal"
+// import { SuccessModal } from "./success-modal" // Commented out for dynamic import
 import confetti from 'canvas-confetti';
+import dynamic from 'next/dynamic';
+
+// Dynamically import SuccessModal
+const SuccessModal = dynamic(() =>
+  import('./success-modal').then(mod => mod.SuccessModal),
+  { ssr: false }
+);
 
 // Define types for curriculum data
 interface Lesson {
@@ -65,24 +72,27 @@ export function InstantLearning() {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   const currentLessonData = curriculumData[currentModule]?.lessons[currentLesson]
-  const totalLessons = curriculumData.reduce((acc, module) => acc + module.lessons.length, 0)
 
-  const handleClassAdd = (className: string) => {
+  const totalLessons = useMemo(() => {
+    return curriculumData.reduce((acc, module) => acc + module.lessons.length, 0);
+  }, [curriculumData]);
+
+  const handleClassAdd = useCallback((className: string) => {
     if (className && !appliedClasses.includes(className)) {
-      setAppliedClasses([...appliedClasses, className])
+      setAppliedClasses(prevAppliedClasses => [...prevAppliedClasses, className]);
     }
-  }
+  }, []); // Depends on setAppliedClasses which is stable
 
-  const handleClassRemove = (className: string) => {
-    setAppliedClasses(appliedClasses.filter((c) => c !== className))
-  }
+  const handleClassRemove = useCallback((className: string) => {
+    setAppliedClasses(prevAppliedClasses => prevAppliedClasses.filter((c) => c !== className));
+  }, []); // Depends on setAppliedClasses which is stable
 
-  const checkCompletion = () => {
-    if (!currentLessonData || !currentLessonData.targetClasses) return false
-    return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls))
-  }
+  const checkCompletion = useCallback(() => {
+    if (!currentLessonData || !currentLessonData.targetClasses) return false;
+    return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls));
+  }, [currentLessonData, appliedClasses]);
 
-  const triggerSideCannonsAnimation = () => {
+  const triggerSideCannonsAnimation = () => { // This function does not depend on component state, so it's stable
     const end = Date.now() + 3 * 1000; // 3 seconds
     const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
 
@@ -115,34 +125,40 @@ export function InstantLearning() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (checkCompletion() && curriculumData.length > 0) {
-      setIsTransitioning(true)
-      setCompletedLessons((prev) => prev + 1)
-      setStreakCount((prev) => prev + 1)
-      setShowSuccess(true)
-      triggerSideCannonsAnimation();
+      setIsTransitioning(true);
+      setCompletedLessons(prev => prev + 1);
+      setStreakCount(prev => prev + 1);
+      setShowSuccess(true);
+      triggerSideCannonsAnimation(); // Stable function
 
       setTimeout(() => {
-        setShowSuccess(false)
-        setAppliedClasses([])
+        setShowSuccess(false);
+        setAppliedClasses([]); // Stable setter
 
-        // Move to next lesson
         if (currentLesson < curriculumData[currentModule].lessons.length - 1) {
-          setCurrentLesson((prev) => prev + 1)
+          setCurrentLesson(prev => prev + 1); // Stable setter
         } else if (currentModule < curriculumData.length - 1) {
-          setCurrentModule((prev) => prev + 1)
-          setCurrentLesson(0)
+          setCurrentModule(prev => prev + 1); // Stable setter
+          setCurrentLesson(0); // Stable setter
         }
 
         setTimeout(() => {
-          setIsTransitioning(false)
-        }, 300)
-      }, 1500)
+          setIsTransitioning(false); // Stable setter
+        }, 300);
+      }, 1500);
     }
-  }
+  }, [
+    checkCompletion,
+    curriculumData,
+    currentModule,
+    currentLesson,
+    // State setters (setAppliedClasses, setCurrentLesson, etc.) are stable
+    // triggerSideCannonsAnimation is stable as it doesn't depend on component state
+  ]);
 
-  const isComplete = checkCompletion()
+  const isComplete = checkCompletion() // This will use the memoized checkCompletion
 
   if (isLoading) {
     return (

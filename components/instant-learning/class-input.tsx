@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, memo } from "react"
 import { X } from "lucide-react"
 
 interface ClassInputProps {
@@ -58,7 +58,7 @@ const commonClasses = [
   "space-x-4",
 ]
 
-export function ClassInput({ appliedClasses, onClassAdd, onClassRemove }: ClassInputProps) {
+function ClassInputOriginal({ appliedClasses, onClassAdd, onClassRemove }: ClassInputProps) {
   const [currentInput, setCurrentInput] = useState("")
 
   const filteredSuggestions = commonClasses
@@ -133,3 +133,6 @@ export function ClassInput({ appliedClasses, onClassAdd, onClassRemove }: ClassI
     </div>
   )
 }
+
+export const ClassInput = memo(ClassInputOriginal);
+ClassInput.displayName = "ClassInput";
