@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 interface ComponentPreviewProps {
   appliedClasses: string[]
   component: string
@@ -5,7 +7,7 @@ interface ComponentPreviewProps {
   isComplete: boolean
 }
 
-export function ComponentPreview({ appliedClasses, component, targetClasses, isComplete }: ComponentPreviewProps) {
+function ComponentPreviewOriginal({ appliedClasses, component, targetClasses, isComplete }: ComponentPreviewProps) {
   const className = appliedClasses.join(" ")
 
   const renderComponent = () => {
@@ -110,3 +112,6 @@ export function ComponentPreview({ appliedClasses, component, targetClasses, isC
     </div>
   )
 }
+
+export const ComponentPreview = memo(ComponentPreviewOriginal);
+ComponentPreview.displayName = "ComponentPreview";

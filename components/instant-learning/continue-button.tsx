@@ -1,13 +1,14 @@
 "use client"
 
 import { ChevronRight } from "lucide-react"
+import { memo } from 'react';
 
 interface ContinueButtonProps {
   isComplete: boolean
   onNext: () => void
 }
 
-export function ContinueButton({ isComplete, onNext }: ContinueButtonProps) {
+function ContinueButtonOriginal({ isComplete, onNext }: ContinueButtonProps) {
   return (
     <div className="w-full">
       <button
@@ -25,3 +26,6 @@ export function ContinueButton({ isComplete, onNext }: ContinueButtonProps) {
     </div>
   )
 }
+
+export const ContinueButton = memo(ContinueButtonOriginal);
+ContinueButton.displayName = "ContinueButton";

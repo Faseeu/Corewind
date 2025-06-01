@@ -1,6 +1,7 @@
 "use client"
 
 import { Flame, BookOpen } from "lucide-react"
+import { memo } from 'react';
 
 interface LearningHeaderProps {
   streakCount: number
@@ -8,7 +9,7 @@ interface LearningHeaderProps {
   totalLessons: number
 }
 
-export function LearningHeader({ streakCount, completedLessons, totalLessons }: LearningHeaderProps) {
+function LearningHeaderOriginal({ streakCount, completedLessons, totalLessons }: LearningHeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
       <div className="container mx-auto px-8 h-16 flex items-center justify-between">
@@ -38,3 +39,6 @@ export function LearningHeader({ streakCount, completedLessons, totalLessons }: 
     </header>
   )
 }
+
+export const LearningHeader = memo(LearningHeaderOriginal);
+LearningHeader.displayName = "LearningHeader"; // Optional: explicitly set display name
