@@ -1,50 +1,45 @@
+// pages/api/curriculum.ts (Temporary Debug)
 import type { NextApiRequest, NextApiResponse } from 'next';
-import path from 'path';
-import fs from 'fs/promises';
 
-// Define a type for the expected structure of the curriculum data (optional but good practice)
-// This should match the structure in your curriculum.json file
+// Minimal types for the hardcoded data
 interface Lesson {
   id: string;
   title: string;
   description: string;
   instruction: string;
   targetClasses: string[];
-  component: string; // Or a more specific type if you have one for components
+  component: string;
   hint?: string;
 }
-
 interface Module {
   id: string;
   title: string;
   description: string;
   lessons: Lesson[];
 }
-
 type CurriculumData = Module[];
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CurriculumData | { error: string }>
 ) {
-  if (req.method !== 'GET') {
+  if (req.method === 'GET') {
+    // Hardcoded data for testing
+    const testData: CurriculumData = [
+      {
+        id: "test-module-01",
+        title: "Test Module (Hardcoded)",
+        description: "This is a hardcoded module for debugging.",
+        lessons: [
+          { id: "test-lesson-01", title: "Test Lesson 1 (Hardcoded)", description: "Desc 1", instruction: "Do task 1", targetClasses: ["bg-red-500", "w-32", "h-32"], component: "div", hint: "Hint 1"}
+        ]
+      }
+    ];
+    console.log("API Route /api/curriculum called (hardcoded_debug): Sending testData");
+    res.status(200).json(testData);
+  } else {
+    console.log(`API Route /api/curriculum called (hardcoded_debug): Method ${req.method} Not Allowed`);
     res.setHeader('Allow', ['GET']);
-    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
-  }
-
-  const jsonFilePath = path.join(process.cwd(), 'data', 'curriculum.json');
-
-  try {
-    // Read the JSON file
-    const fileContents = await fs.readFile(jsonFilePath, 'utf-8');
-    // Parse the JSON data
-    const jsonData = JSON.parse(fileContents) as CurriculumData;
-
-    // Send the JSON data as response
-    res.status(200).json(jsonData);
-  } catch (error) {
-    console.error('Error processing curriculum data:', error); // Log the actual error on the server
-    // In case of any error (file not found, JSON parse error, etc.)
-    res.status(500).json({ error: 'Failed to load curriculum data' });
+    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 }
