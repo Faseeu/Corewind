@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { LearningHeader } from "./learning-header"
 import { TaskHeader } from "./task-header"
 import { MissionsCard } from "./missions-card"
@@ -8,6 +8,7 @@ import { ComponentPreview } from "./component-preview"
 import { ClassInput } from "./class-input"
 import { ContinueButton } from "./continue-button"
 import { SuccessModal } from "./success-modal"
+import confetti from 'canvas-confetti';
 
 // Define types for curriculum data
 interface Lesson {
@@ -81,12 +82,46 @@ export function InstantLearning() {
     return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls))
   }
 
+  const triggerSideCannonsAnimation = () => {
+    const end = Date.now() + 3 * 1000; // 3 seconds
+    const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+
+    const frame = () => {
+      if (Date.now() > end) return;
+
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 0, y: 0.5 }, // left side
+        colors: colors,
+      });
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 1, y: 0.5 }, // right side
+        colors: colors,
+      });
+
+      if (typeof window !== 'undefined') { // Ensure requestAnimationFrame is called in browser
+        requestAnimationFrame(frame);
+      }
+    };
+    if (typeof window !== 'undefined') { // Ensure initial call is in browser
+       frame();
+    }
+  };
+
   const handleNext = () => {
     if (checkCompletion() && curriculumData.length > 0) {
       setIsTransitioning(true)
       setCompletedLessons((prev) => prev + 1)
       setStreakCount((prev) => prev + 1)
       setShowSuccess(true)
+      triggerSideCannonsAnimation();
 
       setTimeout(() => {
         setShowSuccess(false)
