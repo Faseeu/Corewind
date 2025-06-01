@@ -77,11 +77,11 @@ export function InstantLearning() {
             isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
           }`}
         >
-          <div className="container mx-auto px-8 max-w-7xl h-[calc(100vh-6rem)]">
+          <div className="container mx-auto px-8 max-w-7xl min-h-[calc(100vh-6rem)]">
             {/* CSS Grid Layout matching wireframe */}
-            <div className="grid grid-cols-12 grid-rows-12 gap-8 h-full">
-              {/* Task Header - Top Left (spans 5 columns, 4 rows) */}
-              <div className="col-span-5 row-span-4">
+            <div className="grid grid-cols-12 gap-8 h-full">
+              {/* Task Header */}
+              <div className="col-span-12 md:col-span-5">
                 <TaskHeader
                   lesson={currentLessonData}
                   moduleTitle={curriculum[currentModule]?.title}
@@ -89,8 +89,8 @@ export function InstantLearning() {
                 />
               </div>
 
-              {/* Component Preview - Top Right (spans 7 columns, 8 rows) */}
-              <div className="col-span-7 row-span-8">
+              {/* Component Preview */}
+              <div className="col-span-12 md:col-span-7 md:row-span-2 min-h-64">
                 <ComponentPreview
                   appliedClasses={appliedClasses}
                   component={currentLessonData?.component || "div"}
@@ -99,8 +99,8 @@ export function InstantLearning() {
                 />
               </div>
 
-              {/* Missions Card - Middle Left (spans 5 columns, 4 rows) */}
-              <div className="col-span-5 row-span-4">
+              {/* Missions Card */}
+              <div className="col-span-12 md:col-span-5 md:row-start-2">
                 <MissionsCard
                   targetClasses={currentLessonData?.targetClasses || []}
                   appliedClasses={appliedClasses}
@@ -108,13 +108,13 @@ export function InstantLearning() {
                 />
               </div>
 
-              {/* Continue Button - Bottom Left (spans 2 columns, 4 rows) */}
-              <div className="col-span-2 row-span-4 flex items-end">
+              {/* Continue Button */}
+              <div className="col-span-12 md:col-span-5 md:row-start-3 flex items-end">
                 <ContinueButton isComplete={isComplete} onNext={handleNext} />
               </div>
 
-              {/* Class Input - Bottom Right (spans 5 columns, 4 rows) */}
-              <div className="col-span-5 row-span-4 flex items-end">
+              {/* Class Input */}
+              <div className="col-span-12 md:col-span-7 md:row-start-3 md:col-start-6 flex items-end">
                 <ClassInput
                   currentInput=""
                   appliedClasses={appliedClasses}
