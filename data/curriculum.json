@@ -1,0 +1,238 @@
+[
+  {
+    "id": "anatomy-of-box",
+    "title": "Module 1: The Anatomy of a Box",
+    "description": "Understand basic sizing, coloring, spacing within an element, and borders.",
+    "lessons": [
+      {
+        "id": "red-square",
+        "title": "Create a Red Square",
+        "description": "Let's start with the basics - creating a simple colored square.",
+        "instruction": "Add classes to make this element a red square that's 128px by 128px.",
+        "targetClasses": ["w-32", "h-32", "bg-red-500"],
+        "component": "div",
+        "hint": "Try using w-32 for width, h-32 for height, and bg-red-500 for the red background."
+      },
+      {
+        "id": "wider-with-padding",
+        "title": "Make it Wider and Add Padding",
+        "description": "Now let's expand our square and add some internal spacing.",
+        "instruction": "Make the element wider (w-48) and add padding inside (p-6).",
+        "targetClasses": ["w-48", "h-32", "bg-red-500", "p-6"],
+        "component": "div",
+        "hint": "Use w-48 to make it wider and p-6 to add padding on all sides."
+      },
+      {
+        "id": "rounded-with-border",
+        "title": "Round Corners and Add Border",
+        "description": "Let's make our element more polished with rounded corners and a border.",
+        "instruction": "Add rounded corners (rounded-lg) and a blue border (border-2 border-blue-500).",
+        "targetClasses": ["w-48", "h-32", "bg-red-500", "p-6", "rounded-lg", "border-2", "border-blue-500"],
+        "component": "div",
+        "hint": "Use rounded-lg for corners, border-2 for thickness, and border-blue-500 for color."
+      }
+    ]
+  },
+  {
+    "id": "text-typography",
+    "title": "Module 2: Text and Typography",
+    "description": "Style text content with fonts, sizes, colors, and alignment.",
+    "lessons": [
+      {
+        "id": "heading-paragraph",
+        "title": "Create a Heading and Paragraph",
+        "description": "Learn to style different text elements with appropriate sizing.",
+        "instruction": "Make the heading large (text-3xl) and bold (font-bold).",
+        "targetClasses": ["text-3xl", "font-bold"],
+        "component": "text",
+        "hint": "Use text-3xl for size and font-bold for weight."
+      },
+      {
+        "id": "colors-and-sizes",
+        "title": "Change Colors and Sizes",
+        "description": "Experiment with different text colors and font weights.",
+        "instruction": "Make the heading blue (text-blue-500) and the paragraph medium weight (font-medium).",
+        "targetClasses": ["text-3xl", "font-bold", "text-blue-500", "font-medium"],
+        "component": "text",
+        "hint": "Add text-blue-500 for color and font-medium for the paragraph weight."
+      },
+      {
+        "id": "center-text",
+        "title": "Center the Text",
+        "description": "Learn text alignment and line height adjustments.",
+        "instruction": "Center align the text (text-center) and add comfortable line height (leading-relaxed).",
+        "targetClasses": ["text-3xl", "font-bold", "text-blue-500", "text-center", "leading-relaxed"],
+        "component": "text",
+        "hint": "Use text-center for alignment and leading-relaxed for line height."
+      }
+    ]
+  },
+  {
+    "id": "flexbox-basics",
+    "title": "Module 3: Arranging Elements with Flexbox (Part 1)",
+    "description": "Align multiple items along one axis using Flexbox.",
+    "lessons": [
+      {
+        "id": "three-boxes-row",
+        "title": "Place Three Boxes Side-by-Side",
+        "description": "Create a horizontal layout using Flexbox.",
+        "instruction": "Use flex to arrange elements horizontally in a row.",
+        "targetClasses": ["flex"],
+        "component": "div-flex-3-items",
+        "hint": "The flex class creates a horizontal flexbox container. ComponentPreview will show 3 items."
+      }
+    ]
+  },
+  {
+    "id": "flexbox-advanced",
+    "title": "Module 4: Spacing & Wrapping with Flexbox (Part 2)",
+    "description": "Control space between elements and how flex items grow, shrink, and wrap.",
+    "lessons": [
+      {
+        "id": "spacing-with-gap",
+        "title": "Consistent Spacing with Gap",
+        "description": "Add consistent spacing between items using gap.",
+        "instruction": "Apply `gap-4` to the flex container to space out the child elements. The container already has `flex`.",
+        "targetClasses": ["flex", "gap-4"],
+        "component": "div-flex-3-items",
+        "hint": "Use gap-4 on the flex container. `space-x-` or `space-y-` are alternatives for specific directions."
+      },
+      {
+        "id": "grow-one-item",
+        "title": "Grow One Item",
+        "description": "Make one flex item take up remaining available space.",
+        "instruction": "This lesson demonstrates how `flex-1` works on a flex item. For this exercise, apply `flex-1` to this single div component. Imagine it's one item within a flex container.",
+        "targetClasses": ["flex-1", "bg-blue-500", "p-4", "rounded"],
+        "component": "div",
+        "hint": "`flex-1` allows a flex item to grow and shrink as needed, taking up available space."
+      },
+      {
+        "id": "wrap-to-next-line",
+        "title": "Wrap to Next Line",
+        "description": "Make flex items wrap if there's not enough space.",
+        "instruction": "Add `flex-wrap` to the container to allow items to wrap. The container already has `flex` and `gap-4`.",
+        "targetClasses": ["flex", "flex-wrap", "gap-4"],
+        "component": "div-flex-many-items",
+        "hint": "`flex-wrap` allows items to wrap to the next line. ComponentPreview will show many items."
+      }
+    ]
+  },
+  {
+    "id": "responsive-design",
+    "title": "Module 5: Introduction to Responsive Design",
+    "description": "Adapt layouts for different screen sizes using responsive prefixes.",
+    "lessons": [
+      {
+        "id": "responsive-flex-direction",
+        "title": "Responsive Flex Direction",
+        "description": "Stack elements vertically on small screens, horizontally on medium and up.",
+        "instruction": "Apply classes to make the flex container `flex-col` by default, and `md:flex-row` on medium screens and up. It already has `flex` and `gap-4`.",
+        "targetClasses": ["flex", "flex-col", "md:flex-row", "gap-4"],
+        "component": "div-flex-3-items",
+        "hint": "Use `md:` prefix for classes that apply from medium screens upwards."
+      },
+      {
+        "id": "responsive-text-size",
+        "title": "Responsive Text Size",
+        "description": "Change text size based on screen size.",
+        "instruction": "Make the text `text-lg` by default, `md:text-xl` on medium screens, and `lg:text-2xl` on large screens.",
+        "targetClasses": ["text-lg", "md:text-xl", "lg:text-2xl"],
+        "component": "p",
+        "hint": "Combine base classes with prefixed classes like `md:text-xl` and `lg:text-2xl`."
+      }
+    ]
+  },
+  {
+    "id": "interactivity-states",
+    "title": "Module 6: Basic Interactivity & States",
+    "description": "Add hover, focus, and other state effects to elements.",
+    "lessons": [
+      {
+        "id": "hover-background-change",
+        "title": "Hover Background Change",
+        "description": "Change background color on hover.",
+        "instruction": "Make this button change to `bg-blue-700` on hover. It's already `bg-blue-500`, `text-white`, `font-bold`, `py-2`, `px-4`, `rounded`.",
+        "targetClasses": ["bg-blue-500", "hover:bg-blue-700", "text-white", "font-bold", "py-2", "px-4", "rounded"],
+        "component": "button",
+        "hint": "Use the `hover:` prefix to apply styles when an element is hovered."
+      },
+      {
+        "id": "focus-ring",
+        "title": "Focus Ring",
+        "description": "Add a focus ring to an input field for accessibility.",
+        "instruction": "Add `focus:ring-2 focus:ring-blue-500 focus:outline-none` to the input. It already has `border border-gray-300 rounded px-3 py-2`.",
+        "targetClasses": ["border", "border-gray-300", "rounded", "px-3", "py-2", "focus:ring-2", "focus:ring-blue-500", "focus:outline-none"],
+        "component": "input",
+        "hint": "`focus:ring-2` adds a ring on focus. `focus:outline-none` removes the default browser outline."
+      }
+    ]
+  },
+  {
+    "id": "building-components",
+    "title": "Module 7: Building Common Components",
+    "description": "Combine learned utilities to build recognizable UI patterns.",
+    "lessons": [
+      {
+        "id": "simple-button",
+        "title": "Simple Button Component",
+        "description": "Build a styled button with a hover effect.",
+        "instruction": "Create a button with padding (`py-2 px-4`), background (`bg-green-500`), text color (`text-white`), font weight (`font-semibold`), rounded corners (`rounded-md`), and a hover state (`hover:bg-green-700`).",
+        "targetClasses": ["bg-green-500", "hover:bg-green-700", "text-white", "font-semibold", "py-2", "px-4", "rounded-md"],
+        "component": "button",
+        "hint": "Combine multiple utility classes to achieve the desired button style."
+      },
+      {
+        "id": "info-card",
+        "title": "Info Card Component",
+        "description": "Build an info card with a border, shadow, padding, and basic flex layout for content.",
+        "instruction": "Create a card: add a border (`border`), rounded corners (`rounded-lg`), shadow (`shadow-lg`), padding (`p-4`). Inside, arrange conceptual image and text using Flexbox: make the card a flex container (`flex`), align items vertically center (`items-center`), and add space between items (`space-x-4`).",
+        "targetClasses": ["border", "rounded-lg", "shadow-lg", "p-4", "flex", "items-center", "space-x-4"],
+        "component": "div-card-layout",
+        "hint": "`ComponentPreview` will show a placeholder image and text within your styled card."
+      },
+      {
+        "id": "basic-navbar-links",
+        "title": "Basic Navbar Links",
+        "description": "Style links for a basic navbar, making them responsive.",
+        "instruction": "Arrange conceptual links using Flexbox: make the container `flex`. They should stack vertically by default (`flex-col`) but arrange horizontally on medium screens (`md:flex-row`). Add some spacing between links (`space-y-2` for vertical, `md:space-y-0 md:space-x-4` for horizontal).",
+        "targetClasses": ["flex", "flex-col", "md:flex-row", "space-y-2", "md:space-y-0", "md:space-x-4"],
+        "component": "div-nav-links-layout",
+        "hint": "`ComponentPreview` will show several placeholder links within your styled container."
+      },
+      {
+        "id": "two-column-layout",
+        "title": "Two-Column Layout",
+        "description": "Create a responsive two-column layout using Flexbox.",
+        "instruction": "Use Flexbox to create two columns that stack on smaller screens. Make the container `flex` and `flex-col`. On medium screens (`md:`), change to `md:flex-row`. Add a `gap-4` for spacing.",
+        "targetClasses": ["flex", "flex-col", "md:flex-row", "gap-4"],
+        "component": "div-two-col-layout",
+        "hint": "`ComponentPreview` will render two placeholder child divs for the columns."
+      }
+    ]
+  },
+  {
+    "id": "grids-positioning",
+    "title": "Module 8: Simple Grids & Positioning",
+    "description": "Basic grid layouts and element positioning.",
+    "lessons": [
+      {
+        "id": "3-column-grid",
+        "title": "3-Column Card Grid",
+        "description": "Create a 3-column grid of cards that stacks on smaller screens.",
+        "instruction": "Use CSS Grid: make the container `grid`. By default, have 1 column (`grid-cols-1`). On medium screens (`md:`), change to 3 columns (`md:grid-cols-3`). Add `gap-4` for spacing.",
+        "targetClasses": ["grid", "grid-cols-1", "md:grid-cols-3", "gap-4"],
+        "component": "div-grid-3-cards-layout",
+        "hint": "`ComponentPreview` will render 3 placeholder 'card' divs."
+      },
+      {
+        "id": "corner-badge",
+        "title": "Corner Badge",
+        "description": "Position a badge in the top-right corner of a container.",
+        "instruction": "Make the main container `relative`, give it some size (e.g. `w-32 h-32`) and a background (`bg-gray-200`). The badge (a conceptual child div) would then need `absolute`, `top-0`, `right-0`. For this exercise, apply the relative positioning and sizing to the main component.",
+        "targetClasses": ["relative", "w-32", "h-32", "bg-gray-200", "p-4", "rounded"],
+        "component": "div-with-badge",
+        "hint": "To position a child absolutely, its parent needs `relative`. `ComponentPreview` will show a small badge in the corner."
+      }
+    ]
+  }
+]
