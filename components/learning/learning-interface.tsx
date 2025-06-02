@@ -5,24 +5,35 @@ import { InstructionPanel } from "./instruction-panel"
 import { LivePreview } from "./live-preview"
 import { CodeInputPanel } from "./code-input-panel"
 
+import { curriculum } from "@/lib/curriculum" // Adjust path if necessary
+
 interface LearningInterfaceProps {
   moduleId: string
-  levelId: string
+  lessonId: string
 }
 
-export function LearningInterface({ moduleId, levelId }: LearningInterfaceProps) {
+export function LearningInterface({ moduleId, lessonId }: LearningInterfaceProps) {
   const [appliedClasses, setAppliedClasses] = useState<string[]>([])
   const [currentInput, setCurrentInput] = useState("")
 
-  // Mock lesson data - in real app this would come from API/database
-  const lesson = {
-    title: "Make the button background blue",
-    description: "Use the bg-blue-500 class to give the button a blue background.",
-    step: 3,
-    totalSteps: 5,
-    targetClasses: ["bg-blue-500"],
-    component: "button",
+  // Find the module and lesson
+  const module = curriculum.find((m) => m.id === moduleId)
+  let lesson = module?.lessons.find((l) => l.id === lessonId)
+
+  if (!lesson) {
+    console.warn(`Lesson not found for moduleId: ${moduleId}, lessonId: ${lessonId}`)
+    // Use a default/fallback lesson structure
+    lesson = {
+      title: "Lesson Not Found",
+      description: "Please check the module and lesson IDs.",
+      targetClasses: [],
+      component: "div", // Default component
+      instruction: "N/A",
+      id: "not-found",
+      // Add other necessary default properties from your curriculum structure
+    }
   }
+
 
   const handleClassAdd = (className: string) => {
     if (className && !appliedClasses.includes(className)) {
@@ -46,12 +57,12 @@ export function LearningInterface({ moduleId, levelId }: LearningInterfaceProps)
       <div className="flex flex-col lg:flex-row w-full">
         {/* Instruction Panel */}
         <div className="lg:w-80 lg:min-w-80 border-r border-border bg-card">
-          <InstructionPanel lesson={lesson} appliedClasses={appliedClasses} onNext={() => console.log("Next step")} />
+          <InstructionPanel lesson={lesson!} appliedClasses={appliedClasses} onNext={() => console.log("Next step")} />
         </div>
 
         {/* Live Preview */}
         <div className="flex-1 bg-background">
-          <LivePreview appliedClasses={appliedClasses} component={lesson.component} />
+          <LivePreview appliedClasses={appliedClasses} component={lesson!.component} />
         </div>
 
         {/* Code Input Panel */}

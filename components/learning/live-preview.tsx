@@ -30,13 +30,21 @@ export function LivePreview({ appliedClasses, component }: LivePreviewProps) {
           >
             Click me
           </button>
-        )
+        );
+      case "p": // New case for paragraph
+        return (
+          <p
+            className={`${className || "text-base"} transition-all duration-300`}
+          >
+            This is a sample paragraph.
+          </p>
+        );
       default:
         return (
           <div className={`${className || "p-4 border border-gray-300 rounded"} transition-all duration-300`}>
-            Sample Element
+            Preview Element
           </div>
-        )
+        );
     }
   }
 

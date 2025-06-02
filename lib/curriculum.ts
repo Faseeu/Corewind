@@ -44,7 +44,7 @@ export const curriculum = [
         description: "Learn to style different text elements with appropriate sizing.",
         instruction: "Make the heading large (text-3xl) and bold (font-bold).",
         targetClasses: ["text-3xl", "font-bold"],
-        component: "text",
+        component: "p", // Changed from "text"
         hint: "Use text-3xl for size and font-bold for weight.",
       },
       {
@@ -53,7 +53,7 @@ export const curriculum = [
         description: "Experiment with different text colors and font weights.",
         instruction: "Make the heading blue (text-blue-500) and the paragraph medium weight (font-medium).",
         targetClasses: ["text-3xl", "font-bold", "text-blue-500", "font-medium"],
-        component: "text",
+        component: "p", // Changed from "text"
         hint: "Add text-blue-500 for color and font-medium for the paragraph weight.",
       },
       {
@@ -62,7 +62,7 @@ export const curriculum = [
         description: "Learn text alignment and line height adjustments.",
         instruction: "Center align the text (text-center) and add comfortable line height (leading-relaxed).",
         targetClasses: ["text-3xl", "font-bold", "text-blue-500", "text-center", "leading-relaxed"],
-        component: "text",
+        component: "p", // Changed from "text"
         hint: "Use text-center for alignment and leading-relaxed for line height.",
       },
     ],
