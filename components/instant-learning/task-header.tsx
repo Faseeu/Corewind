@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 interface Lesson {
   id: string
   title: string
@@ -16,7 +14,7 @@ interface TaskHeaderProps {
   lessonNumber: number
 }
 
-function TaskHeaderOriginal({ lesson, moduleTitle, lessonNumber }: TaskHeaderProps) {
+export function TaskHeader({ lesson, moduleTitle, lessonNumber }: TaskHeaderProps) {
   if (!lesson) return null
 
   return (
@@ -44,6 +42,3 @@ function TaskHeaderOriginal({ lesson, moduleTitle, lessonNumber }: TaskHeaderPro
     </div>
   )
 }
-
-export const TaskHeader = memo(TaskHeaderOriginal);
-TaskHeader.displayName = "TaskHeader";
