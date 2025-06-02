@@ -24,13 +24,15 @@ export function LearningInterface({ moduleId, lessonId }: LearningInterfaceProps
     console.warn(`Lesson not found for moduleId: ${moduleId}, lessonId: ${lessonId}`)
     // Use a default/fallback lesson structure
     lesson = {
+      id: "not-found",
       title: "Lesson Not Found",
       description: "Please check the module and lesson IDs.",
+      instruction: "N/A",
       targetClasses: [],
       component: "div", // Default component
-      instruction: "N/A",
-      id: "not-found",
-      // Add other necessary default properties from your curriculum structure
+      starter_html_structure: "<div>Lesson content not found.</div>", // Default HTML
+      learnings: [], // Default empty array
+      hint: "", // Default empty string
     }
   }
 
@@ -62,7 +64,11 @@ export function LearningInterface({ moduleId, lessonId }: LearningInterfaceProps
 
         {/* Live Preview */}
         <div className="flex-1 bg-background">
-          <LivePreview appliedClasses={appliedClasses} component={lesson!.component} />
+          <LivePreview
+            appliedClasses={appliedClasses}
+            component={lesson!.component}
+            starter_html_structure={lesson!.starter_html_structure}
+          />
         </div>
 
         {/* Code Input Panel */}

@@ -3,9 +3,13 @@
 import { useState } from "react"
 import { Monitor, Tablet, Smartphone } from "lucide-react"
 
+import { useEffect, useRef, useState } from "react" // Added useRef and useEffect
+import { Monitor, Tablet, Smartphone } from "lucide-react"
+
 interface LivePreviewProps {
   appliedClasses: string[]
   component: string
+  starter_html_structure?: string; // Added new optional prop
 }
 
 const viewports = [
@@ -14,34 +18,46 @@ const viewports = [
   { id: "mobile", label: "Mobile", icon: Smartphone, width: "375px" },
 ]
 
-export function LivePreview({ appliedClasses, component }: LivePreviewProps) {
+export function LivePreview({ appliedClasses, component, starter_html_structure }: LivePreviewProps) {
   const [activeViewport, setActiveViewport] = useState("desktop")
-
   const currentViewport = viewports.find((v) => v.id === activeViewport)
 
   const renderComponent = () => {
     const className = appliedClasses.join(" ")
+    const baseTransitionClasses = "transition-all duration-300" // Common transition
 
+    if (starter_html_structure) {
+      // Apply classes to the wrapper div. The starter_html_structure's root element will receive these.
+      // Base transition classes can be added here if desired for the wrapper.
+      return (
+        <div
+          className={`${className} ${baseTransitionClasses}`}
+          dangerouslySetInnerHTML={{ __html: starter_html_structure }}
+        />
+      );
+    }
+
+    // Fallback to existing switch logic if starter_html_structure is not provided
     switch (component) {
       case "button":
         return (
           <button
-            className={`${className || "px-4 py-2 border border-gray-300 rounded"} transition-all duration-300 hover:scale-105`}
+            className={`${className || "px-4 py-2 border border-gray-300 rounded"} ${baseTransitionClasses} hover:scale-105`}
           >
             Click me
           </button>
         );
-      case "p": // New case for paragraph
+      case "p":
         return (
           <p
-            className={`${className || "text-base"} transition-all duration-300`}
+            className={`${className || "text-base"} ${baseTransitionClasses}`}
           >
             This is a sample paragraph.
           </p>
         );
       default:
         return (
-          <div className={`${className || "p-4 border border-gray-300 rounded"} transition-all duration-300`}>
+          <div className={`${className || "p-4 border border-gray-300 rounded"} ${baseTransitionClasses}`}>
             Preview Element
           </div>
         );
