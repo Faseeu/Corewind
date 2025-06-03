@@ -6,9 +6,9 @@ import { CodeInputPanel } from "./code-input-panel"
 import { LessonDetails } from "./lesson-details"
 import { ExplanationPanel } from "./explanation-panel"
 import { MissionStatus } from "./mission-status"
-import { AnimatedButton } from "@/src/components/ui/animated-button"
+import { AnimatedButton } from "@/components/ui/animated-button" // Removed src
 import { ArrowRight } from "lucide-react"
-import { curriculum } from "@/src/lib/curriculum"
+import { curriculum } from "@/lib/curriculum" // Removed src
 
 interface LearningInterfaceProps {
   moduleId: string
