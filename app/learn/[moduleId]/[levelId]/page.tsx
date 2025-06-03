@@ -3,11 +3,15 @@ import { LearningInterface } from "@/components/learning/learning-interface"
 interface LearningPageProps {
   params: {
     moduleId: string
-    lessonId: string // Renamed from levelId
+    levelId: string // This will be used as lessonId
   }
 }
 
 export default function LearningPage({ params }: LearningPageProps) {
-  // Pass lessonId to LearningInterface
-  return <LearningInterface moduleId={params.moduleId} lessonId={params.lessonId} />
+  // Pass both moduleId and levelId (as lessonId) to LearningInterface
+  return (
+    <div className="min-h-screen bg-background">
+      <LearningInterface moduleId={params.moduleId} lessonId={params.levelId} />
+    </div>
+  )
 }
