@@ -3,10 +3,10 @@ import type { Config } from "tailwindcss";
 const config: Config = {
     darkMode: ["class"],
     content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "*.{js,ts,jsx,tsx,mdx}"
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/styles/**/*.{css,ts,tsx}" // Include tsx for styles if components define styles directly
+    // Add other top-level directories in src if they contain Tailwind classes, e.g. ./src/hooks, ./src/lib
   ],
   theme: {
   	extend: {

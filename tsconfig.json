@@ -13,15 +13,21 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": "./src", // Added baseUrl
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"] // This will now resolve to src/*
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "../next-env.d.ts", // Relative to tsconfig.json location (project root)
+    "**/*.ts",          // Relative to baseUrl (src/**/*.ts)
+    "**/*.tsx",         // Relative to baseUrl (src/**/*.tsx)
+    "../.next/types/**/*.ts" // Relative to tsconfig.json location
+  ],
+  "exclude": ["node_modules", "../.next"] // Relative to tsconfig.json location
 }
