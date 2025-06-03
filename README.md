@@ -34,7 +34,8 @@ Here's a brief overview of the key directories and files:
     *   **`components/learning/code-input-panel.tsx`**: Provides the interface for users to input Tailwind classes.
     *   **`components/ui/`**: Collection of reusable UI components (buttons, cards, etc.), likely from a UI library like Shadcn/UI.
 *   **`lib/`**: Contains core library code and data.
-    *   **`lib/curriculum.ts`**: Defines the structure and content of all learning modules and lessons. This is the primary file to edit when modifying or adding curriculum content.
+    *   **`lib/curriculum.ts`**: Main curriculum index file. It imports module-specific curriculum arrays from the `lib/curriculum/` directory (e.g., `lib/curriculum/module1.ts`) and exports a unified `curriculum` array for the application.
+    *   **`lib/curriculum/`**: Directory containing individual module files (e.g., `module1.ts`, `module2.ts`). Each file exports an array of lesson objects for that module.
     *   **`lib/utils.ts`**: Utility functions.
 *   **`public/`**: Static assets like images and fonts.
 *   **`styles/`**: Global styles.
@@ -54,29 +55,35 @@ The curriculum is defined in `lib/curriculum.ts`. This file exports an array of 
 
 Each lesson object has:
 
-*   `id`: A unique string identifier for the lesson (within the module).
-*   `title`: The display title of the lesson.
-*   `description`: A brief description of the lesson's goal.
-*   `instruction`: The specific task for the user.
-*   `targetClasses`: An array of Tailwind CSS class strings. For more complex scenarios, this can be an object like `{ parent: string[], child1: string[], ... }` to target specific parts of the `starter_html_structure` (Note: current validation and class application primarily targets a single main element).
-*   `component`: The type of HTML element to be rendered for the lesson (e.g., `"div"`, `"button"`, `"p"`). This is used if `starter_html_structure` is not provided.
-*   `starter_html_structure?: string;` (Optional) The initial HTML structure for the lesson's live preview. This is rendered using `dangerouslySetInnerHTML`.
-*   `learnings?: string[];` (Optional) An array of strings describing the key concepts taught in the lesson.
-*   `hint?: string;` (Optional) A string providing a hint to the user.
+*   `id: string`: Unique identifier for the lesson (e.g., "m1-l1-width").
+*   `main_title: string`: The primary, concise title for the lesson.
+*   `secondary_title?: string`: An optional, more descriptive subtitle.
+*   `difficulty_level?: string`: E.g., "absolute_beginner", "easy", "intermediate". (Modules also have a top-level `difficulty`).
+*   `focus_concept?: string`: A brief description of the core concept being taught.
+*   `instruction: string`: The task for the user, can include basic markdown like `**bold**`.
+*   `starter_component_jsx?: string`: (Optional) The initial HTML structure for the live preview, rendered using `dangerouslySetInnerHTML`.
+*   `target_classes?: string[]`: Array of Tailwind CSS class strings the user needs to apply to achieve the lesson goal.
+*   `target_classes_to_remove?: string[]`: (Optional) Array of classes that should be removed if the user adds a conflicting class (e.g., remove `p-4` if `px-8` is added).
+*   `target_classes_applied_to_selector?: string`: (Optional) A CSS selector (e.g., `".target-child"`) indicating which element within the `starter_component_jsx` the `target_classes` should be applied to by the user. If omitted, classes are typically applied to the root of `starter_component_jsx`.
+*   `explanation?: { intro?: string; class_details?: Array<{ className: string; css_equivalent?: string; description: string; }>; key_takeaway?: string; expert_tip?: string; }`: (Optional) A detailed explanation object.
+    *   `intro`: Introduction to the concept.
+    *   `class_details`: Array explaining specific classes, their CSS equivalents, and descriptions.
+    *   `key_takeaway`: A concise summary of the main learning point.
+    *   `expert_tip`: Additional advice or best practices.
+*   `hint?: string`: (Optional) A string providing a hint to the user.
 
 **To add a new lesson:**
 
-1.  Open `lib/curriculum.ts`.
-2.  Find the module you want to add the lesson to.
-3.  Add a new lesson object to its `lessons` array, following the structure above.
-4.  Ensure your `id` is unique within that module.
+1.  Identify the module file in the `lib/curriculum/` directory (e.g., `module1.ts`).
+2.  Add a new lesson object to the exported array in that file, following the structure above.
+3.  Ensure your lesson `id` is unique within that module.
 
 **To add a new module:**
 
-1.  Open `lib/curriculum.ts`.
-2.  Add a new module object to the main `curriculum` array, following the structure above.
-3.  Ensure your `id` is unique globally.
-4.  Add at least one lesson to the module.
+1.  Create a new file for your module in the `lib/curriculum/` directory (e.g., `moduleX.ts`). This file should export an array of lesson objects for the module (e.g., `export const curriculumModuleX = [...]`), where each lesson follows the structure above.
+2.  Open the main `lib/curriculum.ts` file. Import your new module array (e.g., `import { curriculumModuleX } from './curriculum/moduleX';`).
+3.  Add your imported module array to the spread in the final exported `curriculum` array (e.g., `export const curriculum = [...curriculumModule1, ...curriculumModuleX];`).
+4.  Ensure your module `id` (the top-level one in the module file) is unique globally.
 
 ## Error Tracking and Future Considerations
 

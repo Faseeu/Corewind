@@ -1,15 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { Monitor, Tablet, Smartphone } from "lucide-react"
-
-import { useEffect, useRef, useState } from "react" // Added useRef and useEffect
+import { useEffect, useRef, useState } from "react"
 import { Monitor, Tablet, Smartphone } from "lucide-react"
 
 interface LivePreviewProps {
   appliedClasses: string[]
-  component: string
-  starter_html_structure?: string; // Added new optional prop
+  component: string // Fallback if starter_component_jsx is not provided
+  starter_component_jsx?: string; // Renamed from starter_html_structure
+  target_classes_applied_to_selector?: string; // New prop for specific targeting
 }
 
 const viewports = [
@@ -18,46 +16,80 @@ const viewports = [
   { id: "mobile", label: "Mobile", icon: Smartphone, width: "375px" },
 ]
 
-export function LivePreview({ appliedClasses, component, starter_html_structure }: LivePreviewProps) {
+export function LivePreview({
+  appliedClasses,
+  component,
+  starter_component_jsx,
+  target_classes_applied_to_selector,
+}: LivePreviewProps) {
   const [activeViewport, setActiveViewport] = useState("desktop")
   const currentViewport = viewports.find((v) => v.id === activeViewport)
+  const contentHostRef = useRef<HTMLDivElement>(null) // Ref for the div wrapping renderComponent output
 
-  const renderComponent = () => {
-    const className = appliedClasses.join(" ")
-    const baseTransitionClasses = "transition-all duration-300" // Common transition
-
-    if (starter_html_structure) {
-      // Apply classes to the wrapper div. The starter_html_structure's root element will receive these.
-      // Base transition classes can be added here if desired for the wrapper.
-      return (
-        <div
-          className={`${className} ${baseTransitionClasses}`}
-          dangerouslySetInnerHTML={{ __html: starter_html_structure }}
-        />
-      );
+  useEffect(() => {
+    const hostElement = contentHostRef.current
+    if (!hostElement || !hostElement.children[0]) {
+      return // No content to apply classes to
     }
 
-    // Fallback to existing switch logic if starter_html_structure is not provided
+    const baseTransitionClasses = "transition-all duration-300"
+    const newClassName = appliedClasses.join(" ")
+    const fullClassName = `${baseTransitionClasses} ${newClassName}`.trim()
+
+    const renderedOutputElement = hostElement.children[0] as HTMLElement
+
+    if (starter_component_jsx) {
+      let targetElement: HTMLElement | null = renderedOutputElement // Default to the wrapper
+
+      if (target_classes_applied_to_selector) {
+        const selected = renderedOutputElement.querySelector(target_classes_applied_to_selector)
+        if (selected instanceof HTMLElement) {
+          targetElement = selected
+        } else {
+          console.warn(
+            `LivePreview: Selector "${target_classes_applied_to_selector}" did not find a valid HTMLElement. Applying classes to wrapper.`
+          )
+          // If selector fails, classes are applied to the 'renderedOutputElement' (the direct div from dangerouslySetInnerHTML)
+        }
+      }
+      // Apply classes to the determined targetElement
+      if (targetElement) {
+        targetElement.className = fullClassName
+      }
+    }
+    // For fallback components (non-starter_component_jsx), classes are applied via props in renderComponent.
+    // So, no direct DOM manipulation for them here in useEffect.
+  }, [appliedClasses, starter_component_jsx, target_classes_applied_to_selector, component])
+
+  const renderComponent = () => {
+    if (starter_component_jsx) {
+      // Return raw HTML; useEffect will handle class application on its wrapper or specified child.
+      return <div dangerouslySetInnerHTML={{ __html: starter_component_jsx }} />
+    }
+
+    // Fallback logic: These components receive the full class string via props.
+    const baseTransitionClasses = "transition-all duration-300"
+    const newClassName = appliedClasses.join(" ")
+    const fullClassName = `${baseTransitionClasses} ${newClassName}`.trim()
+
     switch (component) {
       case "button":
         return (
           <button
-            className={`${className || "px-4 py-2 border border-gray-300 rounded"} ${baseTransitionClasses} hover:scale-105`}
+            className={`${fullClassName || "px-4 py-2 border border-gray-300 rounded"} hover:scale-105`}
           >
             Click me
           </button>
         );
       case "p":
         return (
-          <p
-            className={`${className || "text-base"} ${baseTransitionClasses}`}
-          >
+          <p className={`${fullClassName || "text-base"}`}>
             This is a sample paragraph.
           </p>
         );
       default:
         return (
-          <div className={`${className || "p-4 border border-gray-300 rounded"} ${baseTransitionClasses}`}>
+          <div className={`${fullClassName || "p-4 border border-gray-300 rounded"}`}>
             Preview Element
           </div>
         );
@@ -97,7 +129,10 @@ export function LivePreview({ appliedClasses, component, starter_html_structure 
               maxWidth: "100%",
             }}
           >
-            <div className="animate-scale-in">{renderComponent()}</div>
+            {/* This is the div where the ref is attached */}
+            <div ref={contentHostRef} className="animate-scale-in w-full h-full flex items-center justify-center">
+              {renderComponent()}
+            </div>
           </div>
         </div>
       </div>
