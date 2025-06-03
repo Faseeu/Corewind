@@ -38,3 +38,24 @@ This document outlines potential areas for future improvement, refactoring, or f
 *   **Potential Improvements:**
     *   Add more cases to the `switch` statement in `renderComponent` for other common HTML elements (e.g., `img`, `span`, `input`, `h1`-`h6`).
     *   Develop a more dynamic rendering system if the list of supported components becomes very large.
+
+## 6. Advanced `LivePreview` Targeting and Rendering
+
+*   **Consideration:** With the introduction of `starter_html_structure`, the `LivePreview` component now renders more complex HTML. However, applying user-inputted classes (`appliedClasses`) is currently limited (e.g., to the wrapper of the injected HTML). Many new lessons require applying classes to specific nested elements within the `starter_html_structure`, or applying different sets of classes to different elements (e.g., `targetClassesParent` vs. `targetClassesChild1`).
+*   **Potential Improvements:**
+    *   Implement a `targetSelector` property in lessons: `LivePreview` could use this CSS selector to identify the specific element within the `starter_html_structure` to which `appliedClasses` should be applied.
+    *   Enhance `LivePreview` to understand complex `targetClasses` objects (e.g., `{ parent: [], child1: [], general: [] }`). This would involve more sophisticated logic to parse this object and apply class lists to the correct elements, potentially identified by selectors or indices.
+    *   Improve the `dangerouslySetInnerHTML` usage with DOM purification (e.g., using a library like DOMPurify) if curriculum content could ever come from less trusted sources, though currently it's from a local file.
+    *   Develop a more robust way to manage and merge classes defined in `starter_html_structure` with user-applied classes on the target element.
+
+## 7. Validation Logic for Complex Lesson Targets
+
+*   **Consideration:** The current lesson completion check (`isComplete` in `InstructionPanel`) simply verifies if all classes in `lesson.targetClasses` (assuming it's a flat array) are present in `appliedClasses`. This will not be sufficient for lessons with:
+    *   `starter_html_structure` where classes need to be applied to specific nested elements.
+    *   Complex `targetClasses` objects (e.g., `targetClassesParent`, `targetClassesChild1`).
+*   **Potential Improvements:**
+    *   Develop a more sophisticated validation engine that can:
+        *   Inspect the DOM structure rendered by `LivePreview` based on `starter_html_structure`.
+        *   Verify that the correct classes from the `targetClasses` object (or its variants) are applied to the intended elements (identified by selectors or structure).
+    *   This may require `CodeInputPanel` and `LearningInterface` to manage multiple sets of `appliedClasses` if the user is expected to style different elements independently within one lesson. (This is a significant architectural consideration).
+    *   The definition of "lesson completion" will need to be more nuanced.

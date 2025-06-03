@@ -58,9 +58,11 @@ Each lesson object has:
 *   `title`: The display title of the lesson.
 *   `description`: A brief description of the lesson's goal.
 *   `instruction`: The specific task for the user.
-*   `targetClasses`: An array of Tailwind CSS class strings that represent the correct solution. (Currently used for reference, future for validation).
-*   `component`: The type of HTML element to be rendered for the lesson (e.g., `"div"`, `"button"`, `"p"`).
-*   `hint`: (Optional) A string providing a hint to the user.
+*   `targetClasses`: An array of Tailwind CSS class strings. For more complex scenarios, this can be an object like `{ parent: string[], child1: string[], ... }` to target specific parts of the `starter_html_structure` (Note: current validation and class application primarily targets a single main element).
+*   `component`: The type of HTML element to be rendered for the lesson (e.g., `"div"`, `"button"`, `"p"`). This is used if `starter_html_structure` is not provided.
+*   `starter_html_structure?: string;` (Optional) The initial HTML structure for the lesson's live preview. This is rendered using `dangerouslySetInnerHTML`.
+*   `learnings?: string[];` (Optional) An array of strings describing the key concepts taught in the lesson.
+*   `hint?: string;` (Optional) A string providing a hint to the user.
 
 **To add a new lesson:**
 
