@@ -1,5 +1,5 @@
-import { InstantLearning } from "@/components/instant-learning/instant-learning"
+import { EnhancedLandingPage } from "@/components/landing/enhanced-landing-page"
 
 export default function HomePage() {
-  return <InstantLearning />
+  return <EnhancedLandingPage />
 }
