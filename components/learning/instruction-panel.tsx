@@ -3,30 +3,35 @@
 import { HelpCircle, ArrowRight } from "lucide-react"
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card" // Added Card components
+import { Card, CardContent } from "@/components/ui/card"
 
 // Updated Lesson interface to match new curriculum structure
 interface Lesson {
-  id: string; // Keep id for keying if needed, though not directly displayed in this panel
-  main_title: string;
-  secondary_title?: string;
-  difficulty_level?: string;
-  focus_concept?: string;
-  instruction: string;
-  target_classes: string[]; // Still needed for isComplete logic
+  id: string
+  // New curriculum properties
+  main_title?: string
+  secondary_title?: string
+  difficulty_level?: string
+  focus_concept?: string
+  instruction?: string
   explanation?: {
-    intro?: string;
+    intro?: string
     class_details?: Array<{
-      className: string;
-      css_equivalent?: string;
-      description: string;
-    }>;
-    key_takeaway?: string;
-    expert_tip?: string;
-  };
-  hint?: string;
-  // Removed: title, description (old ones), learnings (old array)
-  // target_classes_to_remove and target_classes_applied_to_selector are not directly used in this panel
+      className: string
+      css_equivalent?: string
+      description: string
+    }>
+    key_takeaway?: string
+    expert_tip?: string
+  }
+  // Legacy properties (for backward compatibility)
+  title?: string
+  description?: string
+  learnings?: string[]
+  // Common properties
+  target_classes?: string[]
+  targetClasses?: string[] // Legacy property
+  hint?: string
 }
 
 interface InstructionPanelProps {
@@ -36,32 +41,41 @@ interface InstructionPanelProps {
 }
 
 export function InstructionPanel({ lesson, appliedClasses, onNext }: InstructionPanelProps) {
-  // Ensure target_classes is always an array, even if undefined in lesson data (though it shouldn't be)
-  const targetClasses = lesson.target_classes || [];
-  const isComplete = targetClasses.every((cls) => appliedClasses.includes(cls));
+  // Support both new and legacy target classes
+  const targetClasses = lesson.target_classes || lesson.targetClasses || []
+  const isComplete = targetClasses.every((cls) => appliedClasses.includes(cls))
 
   // Basic markdown to HTML for **bold** text -> <strong>bold</strong>
-  // A more robust solution would use a library like 'marked' or 'react-markdown'
-  const formatInstruction = (text: string) => {
-    return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-  };
+  const formatText = (text: string) => {
+    if (!text) return ""
+    return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+  }
+
+  // Determine if we're using the new curriculum format
+  const isNewFormat = !!lesson.main_title
 
   return (
     <div className="h-full flex flex-col p-6 space-y-4 overflow-y-auto animate-slide-up">
       {/* Titles and Difficulty */}
       <div className="space-y-2 animate-fade-in">
-        <h2 className="text-2xl font-bold">{lesson.main_title}</h2>
-        {lesson.secondary_title && (
+        <h2 className="text-2xl font-bold">{isNewFormat ? lesson.main_title : lesson.title}</h2>
+        {isNewFormat && lesson.secondary_title && (
           <p className="text-md text-muted-foreground">{lesson.secondary_title}</p>
         )}
+        {!isNewFormat && lesson.description && <p className="text-muted-foreground">{lesson.description}</p>}
         <div className="flex space-x-4 text-sm text-muted-foreground">
           {lesson.difficulty_level && (
-            <p>Difficulty: <Badge variant="outline" className="font-medium">{lesson.difficulty_level.replace(/_/g, ' ')}</Badge></p>
+            <p>
+              Difficulty:{" "}
+              <Badge variant="outline" className="font-medium">
+                {lesson.difficulty_level.replace(/_/g, " ")}
+              </Badge>
+            </p>
           )}
         </div>
       </div>
 
-      {/* Focus Concept */}
+      {/* Focus Concept - New Format */}
       {lesson.focus_concept && (
         <div className="animate-fade-in stagger-1 py-2">
           <h3 className="text-md font-semibold mb-1">Focus:</h3>
@@ -69,21 +83,36 @@ export function InstructionPanel({ lesson, appliedClasses, onNext }: Instruction
         </div>
       )}
 
-      {/* Instruction */}
+      {/* Instruction - New Format or Description - Old Format */}
       <div className="animate-fade-in stagger-2 py-2">
         <h3 className="text-md font-semibold mb-1">Instructions:</h3>
-        {/* Using dangerouslySetInnerHTML for very basic bold formatting.
-            Consider a safer markdown renderer if instructions become complex. */}
-        <p className="text-sm text-foreground" dangerouslySetInnerHTML={{ __html: formatInstruction(lesson.instruction) }}></p>
+        <p
+          className="text-sm text-foreground"
+          dangerouslySetInnerHTML={{
+            __html: formatText(isNewFormat ? lesson.instruction : lesson.description),
+          }}
+        ></p>
       </div>
 
-      {/* Explanation Section */}
+      {/* Key Concepts/Learnings - Old Format */}
+      {!isNewFormat && lesson.learnings && lesson.learnings.length > 0 && (
+        <div className="space-y-2 animate-fade-in stagger-1">
+          <h3 className="text-lg font-semibold">Key Concepts:</h3>
+          <div className="flex flex-wrap gap-2">
+            {lesson.learnings.map((learning, index) => (
+              <Badge key={index} variant="secondary" className="text-sm">
+                {learning}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Explanation Section - New Format */}
       {lesson.explanation && (
         <div className="space-y-3 py-3 border-t border-border animate-fade-in stagger-3">
           <h3 className="text-xl font-semibold">Explanation</h3>
-          {lesson.explanation.intro && (
-            <p className="text-sm text-muted-foreground">{lesson.explanation.intro}</p>
-          )}
+          {lesson.explanation.intro && <p className="text-sm text-muted-foreground">{lesson.explanation.intro}</p>}
 
           {lesson.explanation.class_details && lesson.explanation.class_details.length > 0 && (
             <div className="space-y-2 pt-2">
@@ -97,7 +126,7 @@ export function InstructionPanel({ lesson, appliedClasses, onNext }: Instruction
                         CSS: <code>{detail.css_equivalent}</code>
                       </p>
                     )}
-                    <p className="text-sm">{detail.description}</p>
+                    <p className="text-sm" dangerouslySetInnerHTML={{ __html: formatText(detail.description) }}></p>
                   </CardContent>
                 </Card>
               ))}
@@ -127,7 +156,7 @@ export function InstructionPanel({ lesson, appliedClasses, onNext }: Instruction
           disabled={!lesson.hint}
           onClick={() => {
             if (lesson.hint) {
-              alert(`Hint: ${lesson.hint}`);
+              alert(`Hint: ${lesson.hint}`)
             }
           }}
         >
@@ -140,7 +169,7 @@ export function InstructionPanel({ lesson, appliedClasses, onNext }: Instruction
       <div className="flex-1 min-h-[2rem]" />
 
       {/* Next Button */}
-      <div className="animate-fade-in stagger-5 sticky bottom-0 py-4 bg-card"> {/* Added sticky positioning */}
+      <div className="animate-fade-in stagger-5 sticky bottom-0 py-4 bg-card">
         <AnimatedButton
           variant="primary"
           onClick={onNext}

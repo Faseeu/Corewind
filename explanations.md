@@ -9,7 +9,7 @@ These components form the heart of the interactive learning experience.
 ### 1. `LearningInterface`
 
 *   **File:** `components/learning/learning-interface.tsx`
-*   **Role:** This is the main orchestrator for a lesson. It fetches the relevant lesson data from `lib/curriculum.ts` based on `moduleId` and `lessonId` props. It manages the state of `appliedClasses` (the Tailwind classes the user has entered) and `currentInput` (the class currently being typed). Handles `target_classes_to_remove` logic from lessons when new classes are added.
+*   **Role:** This is the main orchestrator for a lesson. It fetches the relevant lesson data from `lib/curriculum.ts` based on `moduleId` and `lessonId` props. It manages the state of `appliedClasses` (the Tailwind classes the user has entered) and `currentInput` (the class currently being typed).
 *   **Key Props:**
     *   `moduleId: string`: The ID of the current module.
     *   `lessonId: string`: The ID of the current lesson.
@@ -25,28 +25,26 @@ These components form the heart of the interactive learning experience.
 ### 2. `LivePreview`
 
 *   **File:** `components/learning/live-preview.tsx`
-*   **Role:** Displays the visual output of the user's work. It renders the HTML structure for the current lesson (either from `lesson.starter_component_jsx` or a fallback based on `lesson.component`) and applies the `appliedClasses` to it. It also includes viewport controls (Desktop, Tablet, Mobile) to allow users to see their work at different screen sizes.
+*   **Role:** Displays the visual output of the user's work. It renders the HTML structure for the current lesson (either from `lesson.starter_html_structure` or a fallback based on `lesson.component`) and applies the `appliedClasses` to it. It also includes viewport controls (Desktop, Tablet, Mobile) to allow users to see their work at different screen sizes.
 *   **Key Props:**
     *   `appliedClasses: string[]`: The list of Tailwind classes to apply.
-    *   `component: string`: Fallback component type (e.g., "div", "p", "button") if `starter_component_jsx` is not provided.
-    *   `starter_component_jsx?: string`: The HTML string defining the initial structure for the lesson.
-    *   `target_classes_applied_to_selector?: string`: (Optional) Allows lessons to specify a CSS selector for applying user classes to a specific element within the `starter_component_jsx`.
+    *   `component: string`: Fallback component type (e.g., "div", "p", "button") if `starter_html_structure` is not provided.
+    *   `starter_html_structure?: string`: The HTML string defining the initial structure for the lesson.
 *   **Interactions:**
     *   Receives `appliedClasses` and lesson structure details from `LearningInterface`.
-    *   Uses `dangerouslySetInnerHTML` to render `starter_component_jsx`.
-    *   Uses `useEffect` to dynamically apply classes to the correct target element based on `starter_component_jsx` and `target_classes_applied_to_selector`.
+    *   Uses `dangerouslySetInnerHTML` to render `starter_html_structure`.
 *   **Scalability & Reusability:**
-    *   The introduction of `starter_component_jsx` and `target_classes_applied_to_selector` makes it more flexible for complex lessons.
-    *   The `target_classes_applied_to_selector` is a first step. More complex scenarios (multiple targets, robust error handling for selectors) are noted in `considerations.md`.
+    *   The introduction of `starter_html_structure` makes it more flexible.
+    *   **Major Scalability Bottleneck:** Currently, `appliedClasses` are applied to the wrapper of the HTML injected by `dangerouslySetInnerHTML`. For many lessons in the new curriculum, specific child elements within the `starter_html_structure` need to be targeted. This is a critical area for future enhancement (see `considerations.md` - "Advanced `LivePreview` Targeting and Rendering").
     *   The viewport switching is a good reusable feature.
-    *   If element targeting is further improved, it could be a very reusable component for any live HTML/CSS previewing tool.
+    *   If element targeting is improved, it could be a very reusable component for any live HTML/CSS previewing tool.
 
 ### 3. `InstructionPanel`
 
 *   **File:** `components/learning/instruction-panel.tsx`
-*   **Role:** Displays rich lesson details from the new curriculum structure, including main/secondary titles, difficulty, focus concept, detailed multi-part explanations (intro, class details, key takeaway, expert tip), and hints. It also contains the "Next Step" button, which is enabled based on whether the `targetClasses` are met (basic validation).
+*   **Role:** Displays the details of the current lesson, including its title, description, instructions (implicitly through description), key concepts/learnings, and a hint button. It also contains the "Next Step" button, which is enabled based on whether the `targetClasses` are met (basic validation).
 *   **Key Props:**
-    *   `lesson: Lesson`: An object containing all details for the current lesson (now reflecting the new richer structure).
+    *   `lesson: Lesson`: An object containing all details for the current lesson (title, description, learnings, hint, targetClasses, etc.).
     *   `appliedClasses: string[]`: Used to determine if the lesson is complete.
     *   `onNext: () => void`: Callback for when the "Next Step" button is clicked.
 *   **Interactions:**
@@ -109,13 +107,14 @@ These components form the heart of the interactive learning experience.
 
 ### `lib/curriculum.ts`
 
-*   **Role:** This file now acts as the main aggregator for curriculum data. It imports individual module arrays from the `lib/curriculum/` directory (e.g., `module1.ts`, `module2.ts`) and exports a single, unified `curriculum` array that the application uses.
+*   **Role:** This file is the single source of truth for all learning content. It exports the `curriculum` array, which contains module and lesson objects with all their properties (`id`, `title`, `description`, `instruction`, `starter_html_structure`, `learnings`, `hint`, `targetClasses`, `component`).
 *   **Interactions:**
     *   Read by `LearningInterface` to fetch the data for the current lesson.
-    *   Serves as the central point for assembling the entire curriculum.
+    *   Serves as the "database" for the learning content.
 *   **Scalability & Reusability:**
-    *   The modular structure (importing from `lib/curriculum/`) is much more scalable for managing a large curriculum. Adding or editing modules doesn't require modifying an increasingly large single file.
-    *   `lib/curriculum/moduleX.ts`: Individual files within `lib/curriculum/` (e.g., `module1.ts`) define the actual lesson content for each module, exporting an array of lesson objects with a detailed structure. This promotes separation of concerns.
+    *   For a small to medium amount of content, it's simple to manage.
+    *   As noted in `considerations.md` ("Scalability of Curriculum Data"), for a very large curriculum, this single file could become unwieldy. Alternatives include splitting it into multiple files or moving to a database/CMS.
+    *   The structure itself is reusable for defining lesson-based content.
 
 ## General Architectural Notes
 

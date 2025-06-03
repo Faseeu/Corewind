@@ -5,9 +5,10 @@ import { Monitor, Tablet, Smartphone } from "lucide-react"
 
 interface LivePreviewProps {
   appliedClasses: string[]
-  component: string // Fallback if starter_component_jsx is not provided
-  starter_component_jsx?: string; // Renamed from starter_html_structure
-  target_classes_applied_to_selector?: string; // New prop for specific targeting
+  component: string
+  starter_html_structure?: string // Legacy format
+  starter_component_jsx?: string // New format
+  target_classes_applied_to_selector?: string // New prop for specific targeting
 }
 
 const viewports = [
@@ -19,6 +20,7 @@ const viewports = [
 export function LivePreview({
   appliedClasses,
   component,
+  starter_html_structure,
   starter_component_jsx,
   target_classes_applied_to_selector,
 }: LivePreviewProps) {
@@ -38,6 +40,7 @@ export function LivePreview({
 
     const renderedOutputElement = hostElement.children[0] as HTMLElement
 
+    // Handle new format with starter_component_jsx
     if (starter_component_jsx) {
       let targetElement: HTMLElement | null = renderedOutputElement // Default to the wrapper
 
@@ -47,7 +50,7 @@ export function LivePreview({
           targetElement = selected
         } else {
           console.warn(
-            `LivePreview: Selector "${target_classes_applied_to_selector}" did not find a valid HTMLElement. Applying classes to wrapper.`
+            `LivePreview: Selector "${target_classes_applied_to_selector}" did not find a valid HTMLElement. Applying classes to wrapper.`,
           )
           // If selector fails, classes are applied to the 'renderedOutputElement' (the direct div from dangerouslySetInnerHTML)
         }
@@ -57,14 +60,25 @@ export function LivePreview({
         targetElement.className = fullClassName
       }
     }
-    // For fallback components (non-starter_component_jsx), classes are applied via props in renderComponent.
-    // So, no direct DOM manipulation for them here in useEffect.
-  }, [appliedClasses, starter_component_jsx, target_classes_applied_to_selector, component])
+    // Handle legacy format with starter_html_structure
+    else if (starter_html_structure) {
+      // For legacy format, classes are applied to the wrapper
+      renderedOutputElement.className = fullClassName
+    }
+    // For fallback components (neither starter_component_jsx nor starter_html_structure),
+    // classes are applied via props in renderComponent.
+  }, [appliedClasses, starter_component_jsx, starter_html_structure, target_classes_applied_to_selector, component])
 
   const renderComponent = () => {
+    // New format: starter_component_jsx
     if (starter_component_jsx) {
       // Return raw HTML; useEffect will handle class application on its wrapper or specified child.
       return <div dangerouslySetInnerHTML={{ __html: starter_component_jsx }} />
+    }
+
+    // Legacy format: starter_html_structure
+    if (starter_html_structure) {
+      return <div dangerouslySetInnerHTML={{ __html: starter_html_structure }} />
     }
 
     // Fallback logic: These components receive the full class string via props.
@@ -75,24 +89,14 @@ export function LivePreview({
     switch (component) {
       case "button":
         return (
-          <button
-            className={`${fullClassName || "px-4 py-2 border border-gray-300 rounded"} hover:scale-105`}
-          >
+          <button className={`${fullClassName || "px-4 py-2 border border-gray-300 rounded"} hover:scale-105`}>
             Click me
           </button>
-        );
+        )
       case "p":
-        return (
-          <p className={`${fullClassName || "text-base"}`}>
-            This is a sample paragraph.
-          </p>
-        );
+        return <p className={`${fullClassName || "text-base"}`}>This is a sample paragraph.</p>
       default:
-        return (
-          <div className={`${fullClassName || "p-4 border border-gray-300 rounded"}`}>
-            Preview Element
-          </div>
-        );
+        return <div className={`${fullClassName || "p-4 border border-gray-300 rounded"}`}>Preview Element</div>
     }
   }
 

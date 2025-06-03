@@ -22,51 +22,47 @@ export function LearningInterface({ moduleId, lessonId }: LearningInterfaceProps
 
   if (!lesson) {
     console.warn(`Lesson not found for moduleId: ${moduleId}, lessonId: ${lessonId}`)
-    // Use a default/fallback lesson structure aligned with new curriculumModule1
+    // Use a default/fallback lesson structure that works with both formats
     lesson = {
       id: "not-found",
       main_title: "Lesson Not Found",
+      title: "Lesson Not Found",
       secondary_title: "The requested lesson could not be loaded.",
+      description: "Please check the URL or navigate from the dashboard.",
       difficulty_level: "unknown",
       focus_concept: "N/A",
       instruction: "Please check the URL or navigate from the dashboard.",
       starter_component_jsx: "<div>Content not found.</div>",
       target_classes: [],
+      targetClasses: [],
       explanation: {
         intro: "This lesson could not be loaded.",
         class_details: [],
         key_takeaway: "Please verify the lesson ID.",
-        expert_tip: "If the problem persists, contact support."
+        expert_tip: "If the problem persists, contact support.",
       },
       hint: "",
-      target_classes_to_remove: [],
-      target_classes_applied_to_selector: undefined,
-      // Obsolete fields (title, description, component, learnings (old array), starter_html_structure) are removed
-      // by not being included here. The actual lesson object from curriculum.ts will define the true shape.
-      // This fallback is just for when a lesson isn't found.
     }
   }
 
-
   const handleClassAdd = (className: string) => {
-    if (className) { // Ensure className is not empty
-      let updatedClasses = [...appliedClasses];
+    if (className) {
+      // Ensure className is not empty
+      let updatedClasses = [...appliedClasses]
 
       // Check if the current lesson exists and has target_classes_to_remove
       if (lesson && lesson.target_classes_to_remove && Array.isArray(lesson.target_classes_to_remove)) {
-        updatedClasses = updatedClasses.filter(
-          (ac) => !lesson.target_classes_to_remove.includes(ac)
-        );
+        updatedClasses = updatedClasses.filter((ac) => !lesson.target_classes_to_remove.includes(ac))
       }
 
       // Add the new class if it's not already included
       if (!updatedClasses.includes(className)) {
-        updatedClasses.push(className);
+        updatedClasses.push(className)
       }
 
-      setAppliedClasses(updatedClasses);
+      setAppliedClasses(updatedClasses)
     }
-    setCurrentInput("");
+    setCurrentInput("")
   }
 
   const handleClassRemove = (className: string) => {
@@ -91,13 +87,8 @@ export function LearningInterface({ moduleId, lessonId }: LearningInterfaceProps
         <div className="flex-1 bg-background">
           <LivePreview
             appliedClasses={appliedClasses}
-            // component prop is likely obsolete if starter_component_jsx is always present in new curriculum
-            // However, keeping it for now if LivePreview still uses it as a fallback.
-            // Based on new curriculum, 'component' field is not present at the lesson level.
-            // LivePreview will need to adapt if starter_component_jsx is the sole source of structure.
-            // For now, let's pass an empty string or a default for 'component' if it's truly gone.
-            // Assuming 'lesson.component' might be undefined for new lessons.
-            component={lesson!.component || "div"} // Provide a fallback if component is removed from new lessons
+            component={lesson!.component || "div"}
+            starter_html_structure={lesson!.starter_html_structure}
             starter_component_jsx={lesson!.starter_component_jsx}
             target_classes_applied_to_selector={lesson!.target_classes_applied_to_selector}
           />

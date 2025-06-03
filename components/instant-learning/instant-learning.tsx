@@ -33,19 +33,12 @@ export function InstantLearning() {
   }
 
   const checkCompletion = () => {
-    if (!currentLessonData || !Array.isArray(currentLessonData.targetClasses)) {
-      // Log an error if targetClasses is not an array, which indicates a data issue.
-      if (currentLessonData && !Array.isArray(currentLessonData.targetClasses)) {
-        console.warn("currentLessonData.targetClasses is not an array:", currentLessonData)
-      }
-      return false
-    }
+    if (!currentLessonData) return false
     return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls))
   }
 
   const handleNext = () => {
     if (checkCompletion()) {
-      // checkCompletion is now safer
       setIsTransitioning(true)
       setCompletedLessons((prev) => prev + 1)
       setStreakCount((prev) => prev + 1)
@@ -55,44 +48,18 @@ export function InstantLearning() {
         setShowSuccess(false)
         setAppliedClasses([])
 
-        const currentModuleObj = curriculum[currentModule]
-
-        if (!currentModuleObj || !Array.isArray(currentModuleObj.lessons) || currentModuleObj.lessons.length === 0) {
-          console.error("Current module is invalid or has no lessons. Cannot advance.", currentModuleObj)
-          // Potentially reset to a known good state or show an error to the user.
-          // For now, we stop advancement but the success modal for the current lesson was shown.
-          setIsTransitioning(false) // End transition here as we can't advance
-          return
-        }
-
-        if (currentLesson < currentModuleObj.lessons.length - 1) {
+        // Move to next lesson
+        if (currentLesson < curriculum[currentModule].lessons.length - 1) {
           setCurrentLesson((prev) => prev + 1)
-        } else {
-          // Current lesson is the last in this module
-          const nextModuleIndex = currentModule + 1
-          if (
-            nextModuleIndex < curriculum.length &&
-            curriculum[nextModuleIndex] &&
-            Array.isArray(curriculum[nextModuleIndex].lessons) &&
-            curriculum[nextModuleIndex].lessons.length > 0
-          ) {
-            setCurrentModule(nextModuleIndex)
-            setCurrentLesson(0)
-          } else {
-            // Last lesson of all available modules, or next module has no lessons
-            console.log("All available lessons completed or the next module is empty/invalid.")
-            // User has completed the last available lesson.
-            // No change in currentModule or currentLesson.
-            // The success modal for this last lesson was shown.
-            // Future: Could show a "Congratulations, you finished everything!" message.
-          }
+        } else if (currentModule < curriculum.length - 1) {
+          setCurrentModule((prev) => prev + 1)
+          setCurrentLesson(0)
         }
 
-        // This timeout is for the visual transition of content
         setTimeout(() => {
           setIsTransitioning(false)
         }, 300)
-      }, 1500) // Duration of the success modal
+      }, 1500)
     }
   }
 
