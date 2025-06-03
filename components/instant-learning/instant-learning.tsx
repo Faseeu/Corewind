@@ -36,47 +36,51 @@ export function InstantLearning() {
     if (!currentLessonData || !Array.isArray(currentLessonData.targetClasses)) {
       // Log an error if targetClasses is not an array, which indicates a data issue.
       if (currentLessonData && !Array.isArray(currentLessonData.targetClasses)) {
-        console.warn("currentLessonData.targetClasses is not an array:", currentLessonData);
+        console.warn("currentLessonData.targetClasses is not an array:", currentLessonData)
       }
-      return false;
+      return false
     }
-    return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls));
+    return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls))
   }
 
   const handleNext = () => {
-    if (checkCompletion()) { // checkCompletion is now safer
-      setIsTransitioning(true);
-      setCompletedLessons((prev) => prev + 1);
-      setStreakCount((prev) => prev + 1);
-      setShowSuccess(true);
+    if (checkCompletion()) {
+      // checkCompletion is now safer
+      setIsTransitioning(true)
+      setCompletedLessons((prev) => prev + 1)
+      setStreakCount((prev) => prev + 1)
+      setShowSuccess(true)
 
       setTimeout(() => {
-        setShowSuccess(false);
-        setAppliedClasses([]);
+        setShowSuccess(false)
+        setAppliedClasses([])
 
-        const currentModuleObj = curriculum[currentModule];
+        const currentModuleObj = curriculum[currentModule]
 
         if (!currentModuleObj || !Array.isArray(currentModuleObj.lessons) || currentModuleObj.lessons.length === 0) {
-          console.error("Current module is invalid or has no lessons. Cannot advance.", currentModuleObj);
+          console.error("Current module is invalid or has no lessons. Cannot advance.", currentModuleObj)
           // Potentially reset to a known good state or show an error to the user.
           // For now, we stop advancement but the success modal for the current lesson was shown.
-          setIsTransitioning(false); // End transition here as we can't advance
-          return;
+          setIsTransitioning(false) // End transition here as we can't advance
+          return
         }
 
         if (currentLesson < currentModuleObj.lessons.length - 1) {
-          setCurrentLesson((prev) => prev + 1);
-        } else { // Current lesson is the last in this module
-          const nextModuleIndex = currentModule + 1;
-          if (nextModuleIndex < curriculum.length &&
-              curriculum[nextModuleIndex] &&
-              Array.isArray(curriculum[nextModuleIndex].lessons) &&
-              curriculum[nextModuleIndex].lessons.length > 0) {
-            setCurrentModule(nextModuleIndex);
-            setCurrentLesson(0);
+          setCurrentLesson((prev) => prev + 1)
+        } else {
+          // Current lesson is the last in this module
+          const nextModuleIndex = currentModule + 1
+          if (
+            nextModuleIndex < curriculum.length &&
+            curriculum[nextModuleIndex] &&
+            Array.isArray(curriculum[nextModuleIndex].lessons) &&
+            curriculum[nextModuleIndex].lessons.length > 0
+          ) {
+            setCurrentModule(nextModuleIndex)
+            setCurrentLesson(0)
           } else {
             // Last lesson of all available modules, or next module has no lessons
-            console.log("All available lessons completed or the next module is empty/invalid.");
+            console.log("All available lessons completed or the next module is empty/invalid.")
             // User has completed the last available lesson.
             // No change in currentModule or currentLesson.
             // The success modal for this last lesson was shown.
@@ -86,11 +90,11 @@ export function InstantLearning() {
 
         // This timeout is for the visual transition of content
         setTimeout(() => {
-          setIsTransitioning(false);
-        }, 300);
-      }, 1500); // Duration of the success modal
+          setIsTransitioning(false)
+        }, 300)
+      }, 1500) // Duration of the success modal
     }
-  };
+  }
 
   const isComplete = checkCompletion()
 
