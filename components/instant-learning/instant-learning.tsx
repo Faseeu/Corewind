@@ -34,7 +34,16 @@ export function InstantLearning() {
 
   const checkCompletion = () => {
     if (!currentLessonData) return false
-    return currentLessonData.targetClasses.every((cls) => appliedClasses.includes(cls))
+
+    // Handle both new and legacy curriculum formats
+    const targetClasses = currentLessonData.target_classes || currentLessonData.targetClasses || []
+
+    if (!Array.isArray(targetClasses)) {
+      console.warn("targetClasses is not an array:", targetClasses)
+      return false
+    }
+
+    return targetClasses.every((cls) => appliedClasses.includes(cls))
   }
 
   const handleNext = () => {
@@ -84,7 +93,7 @@ export function InstantLearning() {
               <div className="col-span-12 md:col-span-5">
                 <TaskHeader
                   lesson={currentLessonData}
-                  moduleTitle={curriculum[currentModule]?.title}
+                  moduleTitle={curriculum[currentModule]?.main_title || curriculum[currentModule]?.title}
                   lessonNumber={completedLessons + 1}
                 />
               </div>
@@ -94,7 +103,7 @@ export function InstantLearning() {
                 <ComponentPreview
                   appliedClasses={appliedClasses}
                   component={currentLessonData?.component || "div"}
-                  targetClasses={currentLessonData?.targetClasses || []}
+                  targetClasses={currentLessonData?.target_classes || currentLessonData?.targetClasses || []}
                   isComplete={isComplete}
                 />
               </div>
@@ -102,7 +111,7 @@ export function InstantLearning() {
               {/* Missions Card */}
               <div className="col-span-12 md:col-span-5 md:row-start-2">
                 <MissionsCard
-                  targetClasses={currentLessonData?.targetClasses || []}
+                  targetClasses={currentLessonData?.target_classes || currentLessonData?.targetClasses || []}
                   appliedClasses={appliedClasses}
                   hint={currentLessonData?.hint}
                 />
