@@ -4,38 +4,41 @@
 
 @layer base {
   :root {
-    /* Techy & Cool Color Palette */
-    --background: 222 84% 5%; /* slate-900 */
-    --foreground: 210 40% 98%; /* slate-50 */
+    /* Light Theme with Electric Blue Accents */
+    --background: 0 0% 100%; /* white */
+    --foreground: 222 84% 4.9%; /* slate-950 */
 
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 84% 4.9%;
 
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 84% 4.9%;
 
-    --primary: 199 89% 48%; /* sky-500 */
-    --primary-foreground: 210 40% 98%;
+    --primary: 217 91% 60%; /* electric blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 32% 17%; /* slate-800 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%; /* slate-50 */
+    --secondary-foreground: 222 84% 4.9%;
 
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%; /* slate-400 */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%; /* slate-600 */
 
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 84% 4.9%;
 
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 199 89% 48%;
+    --border: 214 32% 91%; /* slate-200 */
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
 
     --success: 142 76% 36%; /* emerald-600 */
     --warning: 38 92% 50%; /* amber-500 */
-    --info: 199 89% 48%; /* sky-500 */
+    --info: 217 91% 60%; /* electric blue */
+
+    /* Aurora animation */
+    --animate-aurora: aurora 8s ease-in-out infinite alternate;
   }
 }
 
@@ -45,7 +48,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -73,19 +76,19 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-colors;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium transition-all duration-200;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-lg font-medium transition-colors;
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-lg font-medium transition-all duration-200;
   }
 
   .card-base {
-    @apply bg-card text-card-foreground rounded-lg border border-border shadow-md;
+    @apply bg-card text-card-foreground rounded-lg border border-border shadow-sm;
   }
 
   .input-base {
-    @apply bg-input border border-border rounded-md px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring;
+    @apply bg-background border border-border rounded-md px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary transition-all duration-200;
   }
 
   .progress-bar {
@@ -107,11 +110,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/50 rounded-full;
+  @apply bg-muted-foreground/30 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/70;
+  @apply bg-muted-foreground/50;
 }
 
 @layer utilities {
@@ -154,13 +157,17 @@
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .animate-aurora {
+    animation: var(--animate-aurora);
+  }
+
   .hover-lift {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .hover-glow {
@@ -169,7 +176,7 @@
   }
 
   .hover-glow:hover {
-    box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
   }
 
   .button-press {
@@ -185,8 +192,19 @@
   }
 
   .input-focus:focus {
-    transform: scale(1.02);
+    transform: scale(1.01);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .linear-gradient-text {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .electric-blue-glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   }
 }
 
@@ -295,16 +313,39 @@
 @keyframes float-gentle {
   0%,
   100% {
-    transform: translateY(0px) translateX(0px) rotate(0deg);
+    transform: translateY(0px) translateX(0px);
   }
   25% {
-    transform: translateY(-15px) translateX(8px) rotate(1deg);
+    transform: translateY(-10px) translateX(5px);
   }
   50% {
-    transform: translateY(-8px) translateX(-8px) rotate(-1deg);
+    transform: translateY(-5px) translateX(-5px);
   }
   75% {
-    transform: translateY(-20px) translateX(5px) rotate(0.5deg);
+    transform: translateY(-15px) translateX(3px);
+  }
+}
+
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
+  }
+  25% {
+    background-position: 50% 100%;
+    transform: rotate(5deg) scale(1.1);
+  }
+  50% {
+    background-position: 100% 50%;
+    transform: rotate(-3deg) scale(0.95);
+  }
+  75% {
+    background-position: 50% 0%;
+    transform: rotate(3deg) scale(1.05);
+  }
+  100% {
+    background-position: 0% 50%;
+    transform: rotate(-5deg) scale(0.9);
   }
 }
 
@@ -318,117 +359,42 @@
 
 /* Enhanced stagger animation delays */
 .stagger-1 {
-  animation-delay: 0.1s;
+  animation-delay: 0.15s;
 }
 .stagger-2 {
   animation-delay: 0.3s;
 }
 .stagger-3 {
-  animation-delay: 0.5s;
+  animation-delay: 0.45s;
 }
 .stagger-4 {
-  animation-delay: 0.7s;
+  animation-delay: 0.6s;
 }
 .stagger-5 {
-  animation-delay: 0.9s;
+  animation-delay: 0.75s;
 }
 .stagger-6 {
-  animation-delay: 1.1s;
+  animation-delay: 0.9s;
 }
 
-/* Loading spinner */
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
-}
-
-/* Typewriter and cursor animations */
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-@keyframes blink {
-  0%,
-  50% {
+/* Component transition animations */
+@keyframes componentMorph {
+  0% {
+    transform: scale(1);
     opacity: 1;
   }
-  51%,
-  100% {
-    opacity: 0;
-  }
-}
-
-.animate-typewriter {
-  animation: typewriter 2s steps(40, end), blink 0.75s step-end infinite;
-}
-
-/* Gradient animations */
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
   50% {
-    background-position: 100% 50%;
+    transform: scale(1.02);
+    opacity: 0.8;
   }
   100% {
-    background-position: 0% 50%;
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
-}
-
-/* Highlight animation support */
-.highlight-animation {
-  background-size: 0% 100%;
-  background-repeat: no-repeat;
-  transition: background-size 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.highlight-animation.active {
-  background-size: 100% 100%;
-}
-
-/* Enhanced hover effects */
-.hover-scale {
-  transition: transform 0.2s ease-out;
-}
-
-.hover-scale:hover {
-  transform: scale(1.05);
-}
-
-.hover-rotate {
-  transition: transform 0.3s ease-out;
-}
-
-.hover-rotate:hover {
-  transform: rotate(2deg);
-}
-
-/* Focus states */
-.focus-ring {
-  transition: all 0.2s ease-out;
-}
-
-.focus-ring:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+.animate-component-morph {
+  animation: componentMorph 0.4s ease-in-out;
 }
 
 /* Responsive animations */
@@ -438,7 +404,9 @@
   .animate-slide-down,
   .animate-scale-in,
   .animate-float,
-  .animate-float-gentle {
+  .animate-float-gentle,
+  .animate-component-morph,
+  .animate-aurora {
     animation: none;
     opacity: 1;
     transform: none;
