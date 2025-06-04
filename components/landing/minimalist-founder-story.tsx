@@ -1,6 +1,8 @@
 "use client"
 
 import { EnhancedTextHighlighter } from "@/components/ui/enhanced-text-highlighter"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { StaggeredContainer } from "@/components/ui/staggered-container"
 
 const storyParagraphs = [
   {
@@ -75,51 +77,49 @@ const storyParagraphs = [
 
 export function MinimalistFounderStory() {
   return (
-    <section className="py-24 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-20 animate-fade-in">
-            <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-6">
-              <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
-              The Story
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">Why Corewind Exists</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              The journey from frustration to solution — and why it might be exactly what you need.
-            </p>
-          </div>
-
-          {/* Story Content */}
-          <div className="space-y-16">
-            {storyParagraphs.map((paragraph, index) => (
-              <div
-                key={paragraph.id}
-                className={`animate-fade-in stagger-${index + 1}`}
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <p className="text-xl md:text-2xl leading-[1.7] text-foreground font-light tracking-wide max-w-4xl mx-auto">
-                  {paragraph.content}
-                </p>
+    <ErrorBoundary>
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-20 animate-fade-in">
+              <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-6">
+                <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
+                The Story
               </div>
-            ))}
-          </div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">Why Corewind Exists</h2>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                The journey from frustration to solution — and why it might be exactly what you need.
+              </p>
+            </div>
 
-          {/* Closing Statement */}
-          <div className="mt-24 text-center animate-fade-in stagger-6">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-3xl"></div>
-              <div className="relative p-12">
-                <div className="w-1 h-20 bg-primary mx-auto mb-8 rounded-full"></div>
-                <p className="text-2xl md:text-3xl font-light text-foreground leading-[1.6] max-w-4xl mx-auto tracking-wide">
-                  Built from frustration, refined through experience, and shared with the hope that your Tailwind
-                  journey becomes everything mine wasn't — until now.
-                </p>
+            {/* Story Content with Staggered Animation */}
+            <StaggeredContainer delay={150} className="space-y-16">
+              {storyParagraphs.map((paragraph) => (
+                <div key={paragraph.id}>
+                  <p className="text-xl md:text-2xl leading-[1.7] text-foreground font-light tracking-wide max-w-4xl mx-auto">
+                    {paragraph.content}
+                  </p>
+                </div>
+              ))}
+            </StaggeredContainer>
+
+            {/* Closing Statement */}
+            <div className="mt-24 text-center animate-fade-in stagger-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-3xl"></div>
+                <div className="relative p-12">
+                  <div className="w-1 h-20 bg-primary mx-auto mb-8 rounded-full"></div>
+                  <p className="text-2xl md:text-3xl font-light text-foreground leading-[1.6] max-w-4xl mx-auto tracking-wide">
+                    Built from frustration, refined through experience, and shared with the hope that your Tailwind
+                    journey becomes everything mine wasn't — until now.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ErrorBoundary>
   )
 }
