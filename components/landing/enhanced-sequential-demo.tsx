@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback, useReducer } from "react"
 import { Copy, Check } from "lucide-react"
 import type React from "react"
 
@@ -313,6 +313,59 @@ const LivePreview: React.FC<LivePreviewProps> = ({
   )
 }
 
+// Define types for our state and actions
+type DemoState = {
+  currentSequence: number
+  appliedClasses: string[]
+  isPlaying: boolean
+  isTransitioning: boolean
+  typingProgress: number
+  clickCount: number
+}
+
+type DemoAction =
+  | { type: 'TOGGLE_PLAY' }
+  | { type: 'SET_PLAYING'; payload: boolean }
+  | { type: 'RESET' }
+  | { type: 'INCREMENT_CLICK' }
+  | { type: 'RESET_CLICK' }
+  | { type: 'SET_SEQUENCE'; payload: number }
+  | { type: 'SET_APPLIED_CLASSES'; payload: string[] }
+  | { type: 'SET_TYPING_PROGRESS'; payload: number }
+  | { type: 'SET_TRANSITIONING'; payload: boolean };
+
+// State reducer to consolidate state updates
+function demoReducer(state: DemoState, action: DemoAction): DemoState {
+  switch (action.type) {
+    case 'TOGGLE_PLAY':
+      return { ...state, isPlaying: !state.isPlaying };
+    case 'SET_PLAYING':
+      return { ...state, isPlaying: action.payload };
+    case 'RESET':
+      return {
+        ...state,
+        currentSequence: 0,
+        appliedClasses: [],
+        typingProgress: 0,
+        isPlaying: true
+      };
+    case 'INCREMENT_CLICK':
+      return { ...state, clickCount: state.clickCount + 1 };
+    case 'RESET_CLICK':
+      return { ...state, clickCount: 0 };
+    case 'SET_SEQUENCE':
+      return { ...state, currentSequence: action.payload };
+    case 'SET_APPLIED_CLASSES':
+      return { ...state, appliedClasses: action.payload };
+    case 'SET_TYPING_PROGRESS':
+      return { ...state, typingProgress: action.payload };
+    case 'SET_TRANSITIONING':
+      return { ...state, isTransitioning: action.payload };
+    default:
+      return state;
+  }
+}
+
 // Enhanced Typewriter component
 const TypewriterComponent: React.FC<{
   text: string
@@ -359,11 +412,20 @@ const TypewriterComponent: React.FC<{
 
 // Main component with all enhancements
 export function EnhancedSequentialLiveDemo() {
-  const [currentSequence, setCurrentSequence] = useState(0)
-  const [appliedClasses, setAppliedClasses] = useState<string[]>([])
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [typingProgress, setTypingProgress] = useState(0)
+  // Initialize state with useReducer instead of multiple useState hooks
+  const [state, dispatch] = useReducer(demoReducer, {
+    currentSequence: 0,
+    appliedClasses: [],
+    isPlaying: true,
+    isTransitioning: false,
+    typingProgress: 0,
+    clickCount: 0
+  });
+  
+  // Destructure state for easier access
+  const { currentSequence, appliedClasses, isPlaying, isTransitioning, typingProgress, clickCount } = state;
+  
+  // Keep separate useState hooks for UI state that doesn't need to be consolidated
   const [typingSpeed, setTypingSpeed] = useState<keyof typeof TYPING_SPEEDS>("normal")
   const [showSettings, setShowSettings] = useState(false)
   const [typewriterKey, setTypewriterKey] = useState(0)
@@ -372,7 +434,6 @@ export function EnhancedSequentialLiveDemo() {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [clickCount, setClickCount] = useState(0)
 
   const currentDemo = demoSequences[currentSequence]
   const fullClassString = currentDemo.classes.join(" ")
@@ -413,17 +474,17 @@ export function EnhancedSequentialLiveDemo() {
 
   // Reset when sequence changes
   useEffect(() => {
-    setAppliedClasses([])
-    setTypingProgress(0)
-    setTypewriterKey((prev) => prev + 1) // Force typewriter to restart
+    dispatch({ type: 'SET_APPLIED_CLASSES', payload: [] });
+    dispatch({ type: 'SET_TYPING_PROGRESS', payload: 0 });
+    setTypewriterKey((prev) => prev + 1); // Force typewriter to restart
   }, [currentSequence])
 
   // Update applied classes based on typing progress
   useEffect(() => {
     const validClasses = classPositions.filter(({ end }) => typewriterProgress >= end).map(({ class: cls }) => cls)
 
-    setAppliedClasses(validClasses)
-    setTypingProgress(typewriterProgress)
+    dispatch({ type: 'SET_APPLIED_CLASSES', payload: validClasses });
+    dispatch({ type: 'SET_TYPING_PROGRESS', payload: typewriterProgress });
   }, [typewriterProgress, classPositions])
 
   // Auto-advance sequences
@@ -432,10 +493,12 @@ export function EnhancedSequentialLiveDemo() {
 
     if (typewriterProgress >= fullClassString.length) {
       timeoutRef.current = setTimeout(() => {
-        setIsTransitioning(true)
+        dispatch({ type: 'SET_TRANSITIONING', payload: true });
+        
         setTimeout(() => {
-          setCurrentSequence((prev) => (prev + 1) % filteredSequences.length)
-          setIsTransitioning(false)
+          const nextIndex = (currentSequence + 1) % filteredSequences.length;
+          dispatch({ type: 'SET_SEQUENCE', payload: nextIndex });
+          dispatch({ type: 'SET_TRANSITIONING', payload: false });
         }, TRANSITION_DURATION)
       }, AUTO_ADVANCE_DELAY)
     }
@@ -446,7 +509,7 @@ export function EnhancedSequentialLiveDemo() {
         timeoutRef.current = null
       }
     }
-  }, [typewriterProgress, fullClassString.length, isPlaying, isTransitioning, filteredSequences.length])
+  }, [typewriterProgress, fullClassString.length, isPlaying, isTransitioning, filteredSequences.length, currentSequence])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -456,36 +519,30 @@ export function EnhancedSequentialLiveDemo() {
     }
   }, [])
 
-  // Enhanced click handler
+  // Enhanced click handler - consolidated state updates using reducer
   const handleContainerClick = useCallback(() => {
-    setClickCount((prev) => {
-      const newCount = prev + 1
+    dispatch({ type: 'INCREMENT_CLICK' });
 
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current)
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current)
+    }
+
+    clickTimeoutRef.current = setTimeout(() => {
+      if (clickCount === 1) {
+        dispatch({ type: 'TOGGLE_PLAY' });
+      } else if (clickCount >= 2) {
+        dispatch({ type: 'RESET' });
+        setTypewriterKey(prev => prev + 1); // Force typewriter restart
       }
-
-      clickTimeoutRef.current = setTimeout(() => {
-        if (newCount === 1) {
-          setIsPlaying((prev) => !prev)
-        } else if (newCount >= 2) {
-          setCurrentSequence(0)
-          setAppliedClasses([])
-          setTypingProgress(0)
-          setIsPlaying(true)
-        }
-        setClickCount(0)
-      }, CLICK_DEBOUNCE_DELAY)
-
-      return newCount
-    })
-  }, [])
+      dispatch({ type: 'RESET_CLICK' });
+    }, CLICK_DEBOUNCE_DELAY)
+  }, [clickCount])
 
   const handleSequenceChange = useCallback((index: number) => {
-    setCurrentSequence(index)
-    setIsPlaying(true)
-    setClickCount(0)
-    setTypewriterKey((prev) => prev + 1) // Force typewriter restart
+    dispatch({ type: 'SET_SEQUENCE', payload: index });
+    dispatch({ type: 'SET_PLAYING', payload: true });
+    dispatch({ type: 'RESET_CLICK' });
+    setTypewriterKey((prev) => prev + 1); // Force typewriter restart
   }, [])
 
   const handleTypewriterProgress = useCallback((currentLength: number) => {
@@ -514,11 +571,8 @@ export function EnhancedSequentialLiveDemo() {
   }, [fullClassString])
 
   const handleReset = useCallback(() => {
-    setCurrentSequence(0)
-    setAppliedClasses([])
-    setTypingProgress(0)
-    setIsPlaying(true)
-    setTypewriterKey((prev) => prev + 1) // Force typewriter restart
+    dispatch({ type: 'RESET' });
+    setTypewriterKey((prev) => prev + 1); // Force typewriter restart
   }, [])
 
   const progressPercentage = Math.min((typingProgress / fullClassString.length) * 100, 100)
