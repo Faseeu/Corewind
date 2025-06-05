@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from "react"
 import { LivePreview } from "@/components/learning/live-preview"
 import Typewriter from "@/components/ui/typewriter"
 
@@ -44,7 +44,31 @@ const demoSequences: DemoSequence[] = [
   },
 ]
 
-export function SequentialLiveDemo() {
+// Memoized Typewriter wrapper
+const OptimizedTypewriter = memo<{
+  text: string
+  speed: number
+  onProgress: (length: number) => void
+  isPlaying: boolean
+  sequenceKey: number
+}>(({ text, speed, onProgress, isPlaying, sequenceKey }) => {
+  return (
+    <Typewriter
+      key={`${sequenceKey}-${isPlaying}`}
+      text={text}
+      speed={speed}
+      loop={false}
+      showCursor={true}
+      cursorChar="_"
+      className="break-all"
+      onProgress={onProgress}
+    />
+  )
+})
+
+OptimizedTypewriter.displayName = "OptimizedTypewriter"
+
+export const SequentialLiveDemo = memo(() => {
   const [currentSequence, setCurrentSequence] = useState(0)
   const [appliedClasses, setAppliedClasses] = useState<string[]>([])
   const [isPlaying, setIsPlaying] = useState(true)
@@ -55,8 +79,8 @@ export function SequentialLiveDemo() {
   const clickTimeoutRef = useRef<NodeJS.Timeout>()
   const [clickCount, setClickCount] = useState(0)
 
-  const currentDemo = demoSequences[currentSequence]
-  const fullClassString = currentDemo.classes.join(" ")
+  const currentDemo = useMemo(() => demoSequences[currentSequence], [currentSequence])
+  const fullClassString = useMemo(() => currentDemo.classes.join(" "), [currentDemo.classes])
 
   // Memoize class positions for better performance
   const classPositions = useMemo(() => {
@@ -96,8 +120,8 @@ export function SequentialLiveDemo() {
         setTimeout(() => {
           setCurrentSequence((prev) => (prev + 1) % demoSequences.length)
           setIsTransitioning(false)
-        }, 300) // Faster transition
-      }, 1000) // Shorter wait time
+        }, 300)
+      }, 1000)
     }
 
     return () => {
@@ -108,7 +132,7 @@ export function SequentialLiveDemo() {
   }, [typingProgress, fullClassString.length, isPlaying, isTransitioning])
 
   // Handle single/double click
-  const handleContainerClick = () => {
+  const handleContainerClick = useCallback(() => {
     setClickCount((prev) => prev + 1)
 
     if (clickTimeoutRef.current) {
@@ -125,18 +149,23 @@ export function SequentialLiveDemo() {
         setIsPlaying(true)
       }
       setClickCount(0)
-    }, 250) // Faster click detection
-  }
+    }, 250)
+  }, [clickCount, isPlaying])
 
-  const handleSequenceChange = (index: number) => {
+  const handleSequenceChange = useCallback((index: number) => {
     setCurrentSequence(index)
     setIsPlaying(true)
-  }
+  }, [])
 
   // Optimized progress handler
-  const handleTypewriterProgress = (currentLength: number) => {
+  const handleTypewriterProgress = useCallback((currentLength: number) => {
     setTypingProgress(currentLength)
-  }
+  }, [])
+
+  const progressPercentage = useMemo(
+    () => Math.min((typingProgress / fullClassString.length) * 100, 100),
+    [typingProgress, fullClassString.length],
+  )
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6">
@@ -164,16 +193,46 @@ export function SequentialLiveDemo() {
         ))}
       </div>
 
-      {/* Live Preview - Clickable */}
+      {/* Live Preview - Redesigned to match the image */}
       <div
         className={`transition-all duration-300 cursor-pointer ${isTransitioning ? "opacity-50 scale-95" : "opacity-100 scale-100"}`}
         onClick={handleContainerClick}
       >
-        <LivePreview
-          appliedClasses={appliedClasses}
-          component={currentDemo.component}
-          starter_component_jsx={currentDemo.starter_component_jsx}
-        />
+        <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+          {/* Header bar with colored dots */}
+          <div className="bg-[#e2e8f0] px-4 py-3 flex items-center">
+            <div className="flex space-x-2">
+              <div className="w-3 h-3 bg-[#ff6b6b] rounded-full"></div>
+              <div className="w-3 h-3 bg-[#ffd93d] rounded-full"></div>
+              <div className="w-3 h-3 bg-[#6bff8b] rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Content area */}
+          <div className="bg-white p-8 flex items-center justify-center min-h-[200px]">
+            <LivePreview
+              appliedClasses={appliedClasses}
+              component={currentDemo.component}
+              starter_component_jsx={currentDemo.starter_component_jsx || "Your Box"}
+            />
+          </div>
+
+          {/* Progress footer */}
+          <div className="bg-[#f1f5f9] px-6 py-4 flex items-center justify-between">
+            <span className="text-[#64748b] font-medium">Progress</span>
+            <span className="text-[#64748b] font-medium">
+              {appliedClasses.length}/{currentDemo.classes.length}
+            </span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="bg-[#e2e8f0] h-2">
+            <div
+              className="bg-primary h-2 transition-all duration-300 ease-out"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Code Window */}
@@ -195,15 +254,12 @@ export function SequentialLiveDemo() {
         <div className="p-4 min-h-[80px] flex items-center">
           <div className="font-mono text-sm text-green-400 w-full">
             {isPlaying ? (
-              <Typewriter
-                key={`${currentSequence}-${isPlaying}`}
+              <OptimizedTypewriter
                 text={fullClassString}
-                speed={20} // Faster typing
-                loop={false}
-                showCursor={true}
-                cursorChar="_"
-                className="break-all"
+                speed={20}
                 onProgress={handleTypewriterProgress}
+                isPlaying={isPlaying}
+                sequenceKey={currentSequence}
               />
             ) : (
               <span className="break-all">
@@ -214,16 +270,8 @@ export function SequentialLiveDemo() {
           </div>
         </div>
       </div>
-
-      {/* Progress Bar */}
-      <div className="w-full bg-secondary rounded-full h-2">
-        <div
-          className="bg-primary h-2 rounded-full transition-all duration-200 ease-out"
-          style={{
-            width: `${(typingProgress / fullClassString.length) * 100}%`,
-          }}
-        />
-      </div>
     </div>
   )
-}
+})
+
+SequentialLiveDemo.displayName = "SequentialLiveDemo"

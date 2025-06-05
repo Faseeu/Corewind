@@ -1,196 +1,94 @@
 "use client"
 
-import type React from "react"
-import { type ElementType, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
-import { motion, type Transition, type UseInViewOptions } from "motion/react"
-import { cn } from "@/lib/utils"
+import React, { useState, useEffect, useRef } from "react"
+import { SvgText } from "@/components/ui/svg-text"
 
-type HighlightDirection = "ltr" | "rtl" | "ttb" | "btt"
-type HighlightVariant = "primary" | "secondary" | "accent" | "warning" | "success" | "info" | "custom"
-
-const highlightVariants = {
-  primary: "hsl(199, 89%, 85%)",
-  secondary: "hsl(217, 32%, 80%)",
-  accent: "hsl(280, 90%, 85%)",
-  warning: "hsl(38, 92%, 85%)",
-  success: "hsl(142, 76%, 85%)",
-  info: "hsl(200, 90%, 85%)",
-  custom: "hsl(25, 90%, 80%)",
-}
-
-type EnhancedTextHighlighterProps = {
-  children: React.ReactNode
-  as?: ElementType
-  triggerType?: "hover" | "ref" | "inView" | "auto"
-  transition?: Transition
-  useInViewOptions?: UseInViewOptions
+interface EnhancedTextHighlighterProps {
+  text: string | React.ReactNode
+  highlightColor?: string
+  textColor?: string
   className?: string
-  variant?: HighlightVariant
-  customColor?: string
-  direction?: HighlightDirection
+  animationDuration?: number
   delay?: number
-} & React.HTMLAttributes<HTMLElement>
-
-export type EnhancedTextHighlighterRef = {
-  animate: (direction?: HighlightDirection) => void
-  reset: () => void
+  onAnimationComplete?: () => void
+  highlightWidth?: string
+  highlightHeight?: string
+  highlightOffset?: string
+  highlightRadius?: string
+  highlightOpacity?: string
+  animated?: boolean
+  children?: React.ReactNode
 }
 
-export const EnhancedTextHighlighter = forwardRef<EnhancedTextHighlighterRef, EnhancedTextHighlighterProps>(
-  (
-    {
-      children,
-      as = "span",
-      triggerType = "inView",
-      transition = { type: "spring", duration: 1.2, delay: 0, bounce: 0 },
-      useInViewOptions = {
-        once: true,
-        initial: false,
-        amount: 0.3,
-      },
-      className,
-      variant = "primary",
-      customColor,
-      direction = "ltr",
-      delay = 0,
-      ...props
-    },
-    ref,
-  ) => {
-    const componentRef = useRef<HTMLDivElement>(null)
-    const [isAnimating, setIsAnimating] = useState(false)
-    const [isHovered, setIsHovered] = useState(false)
-    const [currentDirection, setCurrentDirection] = useState<HighlightDirection>(direction)
-    const [isInView, setIsInView] = useState(false)
+export function EnhancedTextHighlighter({
+  text,
+  highlightColor = "bg-primary/20",
+  textColor = "text-foreground",
+  className = "",
+  animationDuration = 1000,
+  delay = 0,
+  onAnimationComplete,
+  highlightWidth = "100%",
+  highlightHeight = "0.6em",
+  highlightOffset = "0.1em",
+  highlightRadius = "0.25em",
+  highlightOpacity = "0.7",
+  animated = true,
+  children,
+}: EnhancedTextHighlighterProps) {
+  const [isVisible, setIsVisible] = useState(false)
+  const [isAnimated, setIsAnimated] = useState(false)
+  const containerRef = useRef<HTMLSpanElement>(null)
 
-    useEffect(() => {
-      setCurrentDirection(direction)
-    }, [direction])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true)
 
-    useEffect(() => {
-      if (triggerType === "inView") {
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (entry.isIntersecting) {
-              setTimeout(() => setIsInView(true), delay)
-            }
-          },
-          {
-            rootMargin: useInViewOptions?.rootMargin,
-            threshold: useInViewOptions?.threshold,
-            root: useInViewOptions?.root,
-          },
-        )
+      if (animated) {
+        const animationTimer = setTimeout(() => {
+          setIsAnimated(true)
+          if (onAnimationComplete) onAnimationComplete()
+        }, animationDuration)
 
-        if (componentRef.current) {
-          observer.observe(componentRef.current)
-        }
-
-        return () => {
-          if (componentRef.current) {
-            observer.unobserve(componentRef.current)
-          }
-          observer.disconnect()
-        }
+        return () => clearTimeout(animationTimer)
+      } else {
+        setIsAnimated(true)
+        if (onAnimationComplete) onAnimationComplete()
       }
-    }, [triggerType, useInViewOptions, delay])
+    }, delay)
 
-    const shouldAnimate =
-      triggerType === "hover"
-        ? isHovered
-        : triggerType === "inView"
-          ? isInView
-          : triggerType === "ref"
-            ? isAnimating
-            : triggerType === "auto"
-              ? true
-              : false
+    return () => clearTimeout(timer)
+  }, [delay, animationDuration, onAnimationComplete, animated])
 
-    useImperativeHandle(ref, () => ({
-      animate: (animationDirection?: HighlightDirection) => {
-        if (animationDirection) {
-          setCurrentDirection(animationDirection)
-        }
-        setIsAnimating(true)
-      },
-      reset: () => setIsAnimating(false),
-    }))
+  // Check if text is a React element or string
+  const isReactElement = React.isValidElement(text)
+  const containsSvg = typeof text === "string" && text.includes("<svg")
 
-    const ElementTag = as || "span"
+  return (
+    <span
+      ref={containerRef}
+      className={`relative inline-block ${textColor} ${className}`}
+      style={{ whiteSpace: "pre-wrap" }}
+    >
+      {/* Highlight background */}
+      <span
+        className={`absolute ${highlightColor} ${animated ? "transition-all duration-700 ease-out" : ""}`}
+        style={{
+          left: 0,
+          bottom: highlightOffset,
+          height: highlightHeight,
+          width: isVisible ? highlightWidth : "0%",
+          borderRadius: highlightRadius,
+          opacity: isAnimated ? highlightOpacity : "0",
+          zIndex: -1,
+          transformOrigin: "left",
+        }}
+      />
 
-    const getBackgroundSize = (animated: boolean) => {
-      switch (currentDirection) {
-        case "ltr":
-          return animated ? "100% 100%" : "0% 100%"
-        case "rtl":
-          return animated ? "100% 100%" : "0% 100%"
-        case "ttb":
-          return animated ? "100% 100%" : "100% 0%"
-        case "btt":
-          return animated ? "100% 100%" : "100% 0%"
-        default:
-          return animated ? "100% 100%" : "0% 100%"
-      }
-    }
+      {/* Text content */}
+      {isReactElement ? text : containsSvg ? <SvgText>{text}</SvgText> : <span>{text}</span>}
 
-    const getBackgroundPosition = () => {
-      switch (currentDirection) {
-        case "ltr":
-          return "0% 0%"
-        case "rtl":
-          return "100% 0%"
-        case "ttb":
-          return "0% 0%"
-        case "btt":
-          return "0% 100%"
-        default:
-          return "0% 0%"
-      }
-    }
-
-    const animatedSize = useMemo(() => getBackgroundSize(shouldAnimate), [shouldAnimate, currentDirection])
-    const initialSize = useMemo(() => getBackgroundSize(false), [currentDirection])
-    const backgroundPosition = useMemo(() => getBackgroundPosition(), [currentDirection])
-
-    const highlightColor = customColor || highlightVariants[variant]
-
-    const highlightStyle = {
-      backgroundImage: `linear-gradient(${highlightColor}, ${highlightColor})`,
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: backgroundPosition,
-      backgroundSize: animatedSize,
-      boxDecorationBreak: "clone",
-      WebkitBoxDecorationBreak: "clone",
-    } as React.CSSProperties
-
-    return (
-      <ElementTag
-        ref={componentRef}
-        onMouseEnter={() => triggerType === "hover" && setIsHovered(true)}
-        onMouseLeave={() => triggerType === "hover" && setIsHovered(false)}
-        {...props}
-      >
-        <motion.span
-          className={cn("inline", className)}
-          style={highlightStyle}
-          animate={{
-            backgroundSize: animatedSize,
-          }}
-          initial={{
-            backgroundSize: initialSize,
-          }}
-          transition={{
-            ...transition,
-            delay: transition.delay || 0 + delay / 1000,
-          }}
-        >
-          {children}
-        </motion.span>
-      </ElementTag>
-    )
-  },
-)
-
-EnhancedTextHighlighter.displayName = "EnhancedTextHighlighter"
-
-export default EnhancedTextHighlighter
+      {children}
+    </span>
+  )
+}

@@ -1,6 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useState, useEffect } from "react"
+import { SequentialLiveDemo as SequentialLiveDemoComponent } from "./sequential-live-demo"
+import { EnhancedTextHighlighter } from "../ui/enhanced-text-highlighter"
+import { SvgText } from "../ui/svg-text"
+import { useRef, useMemo, useCallback } from "react"
 import { Copy, Check, Eye } from "lucide-react"
 import type React from "react"
 
@@ -395,6 +399,64 @@ const TypewriterComponent: React.FC<{
 
 // Main component with all enhancements
 export function EnhancedSequentialLiveDemo() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <section className="py-16 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12 space-y-4">
+          <EnhancedTextHighlighter
+            text={
+              <SvgText className="text-3xl font-bold">
+                Learn by
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-blue-500"
+                >
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Doing
+              </SvgText>
+            }
+            highlightColor="bg-blue-100"
+            className="mb-2"
+          />
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Our interactive demos let you experiment with Tailwind CSS classes in real-time. Watch as your components
+            transform with each class you add.
+          </p>
+        </div>
+
+        <div
+          className={`transition-all duration-700 transform ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
+          <SequentialLiveDemoComponent />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export function SequentialLiveDemo() {
   const [currentSequence, setCurrentSequence] = useState(0)
   const [appliedClasses, setAppliedClasses] = useState<string[]>([])
   const [isPlaying, setIsPlaying] = useState(true)
