@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/layout/header"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -23,7 +24,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="min-h-screen bg-background">
           <Header />
-          <main className="pt-16">{children}</main>
+          <main className="pt-16">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
         </div>
       </body>
     </html>

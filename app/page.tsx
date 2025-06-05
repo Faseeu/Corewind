@@ -1,5 +1,10 @@
 import { LinearLandingPage } from "@/components/landing/linear-landing-page"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 
 export default function HomePage() {
-  return <LinearLandingPage />
+  return (
+    <ErrorBoundary>
+      <LinearLandingPage />
+    </ErrorBoundary>
+  )
 }

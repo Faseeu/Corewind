@@ -9,6 +9,7 @@ import { MissionStatus } from "./mission-status"
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { ArrowRight } from "lucide-react"
 import { curriculum } from "@/lib/curriculum"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 
 interface LearningInterfaceProps {
   moduleId: string
@@ -108,55 +109,67 @@ export function LearningInterface({ moduleId, lessonId }: LearningInterfaceProps
         <div className="lg:w-80 lg:min-w-80 border-r border-border bg-card overflow-y-auto">
           <div className="p-6 space-y-6">
             {/* Lesson Details */}
-            <LessonDetails lesson={lesson} moduleTitle={module?.main_title || module?.title || "Module"} />
+            <ErrorBoundary>
+              <LessonDetails lesson={lesson} moduleTitle={module?.main_title || module?.title || "Module"} />
+            </ErrorBoundary>
 
             {/* Mission Status */}
-            <MissionStatus
-              targetClasses={targetClasses}
-              appliedClasses={appliedClasses}
-              targetClassesToRemove={targetClassesToRemove}
-            />
+            <ErrorBoundary>
+              <MissionStatus
+                targetClasses={targetClasses}
+                appliedClasses={appliedClasses}
+                targetClassesToRemove={targetClassesToRemove}
+              />
+            </ErrorBoundary>
 
             {/* Explanation Panel */}
-            <ExplanationPanel explanation={lesson.explanation} hint={lesson.hint} />
+            <ErrorBoundary>
+              <ExplanationPanel explanation={lesson.explanation} hint={lesson.hint} />
+            </ErrorBoundary>
 
             {/* Next Button */}
             <div className="pt-4 sticky bottom-6">
-              <AnimatedButton
-                variant="primary"
-                onClick={handleNext}
-                disabled={!isComplete}
-                success={isComplete}
-                className="w-full"
-              >
-                <span>{isComplete ? "Next Lesson" : "Complete the Task"}</span>
-                <ArrowRight className="w-4 h-4" />
-              </AnimatedButton>
+              <ErrorBoundary>
+                <AnimatedButton
+                  variant="primary"
+                  onClick={handleNext}
+                  disabled={!isComplete}
+                  success={isComplete}
+                  className="w-full"
+                >
+                  <span>{isComplete ? "Next Lesson" : "Complete the Task"}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </AnimatedButton>
+              </ErrorBoundary>
             </div>
           </div>
         </div>
 
         {/* Live Preview */}
         <div className="flex-1 bg-background">
-          <LivePreview
-            appliedClasses={appliedClasses}
-            component={lesson.component || "div"}
-            starter_html_structure={lesson.starter_html_structure}
-            starter_component_jsx={lesson.starter_component_jsx}
-            target_classes_applied_to_selector={lesson.target_classes_applied_to_selector}
-          />
+          <ErrorBoundary>
+            <LivePreview
+              appliedClasses={appliedClasses}
+              component={lesson.component || "div"}
+              starter_html_structure={lesson.starter_html_structure}
+              starter_component_jsx={lesson.starter_component_jsx}
+              target_classes_applied_to_selector={lesson.target_classes_applied_to_selector}
+            />
+          </ErrorBoundary>
         </div>
 
         {/* Code Input Panel */}
         <div className="lg:w-80 lg:min-w-80 border-l border-border bg-card">
-          <CodeInputPanel
-            currentInput={currentInput}
-            setCurrentInput={setCurrentInput}
-            appliedClasses={appliedClasses}
-            onClassAdd={handleClassAdd}
-            onClassRemove={handleClassRemove}
-            onReset={handleReset}
-          />
+          <ErrorBoundary>
+            <CodeInputPanel
+              currentInput={currentInput}
+              setCurrentInput={setCurrentInput}
+              appliedClasses={appliedClasses}
+              onClassAdd={handleClassAdd}
+              onClassRemove={handleClassRemove}
+              onReset={handleReset}
+            />
+          </ErrorBoundary>
         </div>
       </div>
     </div>
