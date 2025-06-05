@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChevronDown, ChevronUp, Lightbulb } from "lucide-react"
+import { sanitizeHtml } from "@/lib/utils"
 
 interface ExplanationPanelProps {
   explanation: any
@@ -13,10 +14,10 @@ export function ExplanationPanel({ explanation, hint }: ExplanationPanelProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showHint, setShowHint] = useState(false)
 
-  // Format markdown-style bold text
+  // Sanitize and format markdown-style bold text
   const formatText = (text: string) => {
     if (!text) return ""
-    return text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    return sanitizeHtml(text)
   }
 
   if (!explanation) return null
