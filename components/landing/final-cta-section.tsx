@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, BookOpen } from "lucide-react"
+import { BookOpen } from "lucide-react"
 import { AnimatedButton } from "@/components/ui/animated-button"
 
 export function FinalCTASection() {
@@ -17,14 +17,16 @@ export function FinalCTASection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-              <Link href="/learn">
-                <AnimatedButton size="lg" className="text-lg px-8 py-4">
-                  Start Learning Tailwind for Free
-                  <ArrowRight className="w-5 h-5" />
+              <Link href="/instant-learning">
+                <AnimatedButton size="lg" className="text-lg px-8 py-4 rounded-[25px]">
+                  <div className="flex flex-col items-center">
+                    <span>Get Started</span>
+                    <span className="text-xs opacity-75 font-normal">No sign up required</span>
+                  </div>
                 </AnimatedButton>
               </Link>
               <Link href="/curriculum">
-                <AnimatedButton variant="secondary" size="lg" className="text-lg px-8 py-4">
+                <AnimatedButton variant="secondary" size="lg" className="text-lg px-8 py-4 rounded-[25px]">
                   <BookOpen className="w-5 h-5" />
                   View All Learning Paths
                 </AnimatedButton>

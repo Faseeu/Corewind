@@ -31,21 +31,32 @@ export function Header() {
           <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             Dashboard
           </Link>
-          <Link href="/curriculum" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-            Curriculum
+          <Link
+            href="/roadmap/module-one"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Roadmap
           </Link>
         </nav>
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link href="/learn">
-            <AnimatedButton size="sm">Start Learning</AnimatedButton>
+          <Link href="/instant-learning">
+            <AnimatedButton size="sm" className="rounded-[25px]">
+              <div className="flex flex-col items-center text-xs">
+                <span>Get Started</span>
+                <span className="text-[10px] opacity-75 font-normal">No sign up required</span>
+              </div>
+            </AnimatedButton>
           </Link>
+          <button className="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-[25px] hover:bg-primary hover:text-primary-foreground transition-colors">
+            Sign Up
+          </button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+          className="md:hidden p-2 hover:bg-secondary rounded-[25px] transition-colors"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -71,18 +82,27 @@ export function Header() {
               Dashboard
             </Link>
             <Link
-              href="/curriculum"
+              href="/roadmap/module-one"
               className="block text-sm font-medium text-foreground hover:text-primary transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Curriculum
+              Roadmap
             </Link>
-            <div className="pt-4">
-              <Link href="/learn" onClick={() => setIsMenuOpen(false)}>
-                <AnimatedButton size="sm" className="w-full">
-                  Start Learning
+            <div className="pt-4 space-y-2">
+              <Link href="/instant-learning" onClick={() => setIsMenuOpen(false)}>
+                <AnimatedButton size="sm" className="w-full rounded-[25px]">
+                  <div className="flex flex-col items-center text-xs">
+                    <span>Get Started</span>
+                    <span className="text-[10px] opacity-75 font-normal">No sign up required</span>
+                  </div>
                 </AnimatedButton>
               </Link>
+              <button
+                className="w-full px-4 py-2 text-sm font-medium text-primary border border-primary rounded-[25px] hover:bg-primary hover:text-primary-foreground transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sign Up
+              </button>
             </div>
           </nav>
         </div>

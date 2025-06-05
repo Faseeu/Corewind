@@ -27,7 +27,7 @@ const suggestions = [
   "py-2",
   "p-4",
   "p-6",
-  "rounded",
+  "rounded-[25px]",
   "rounded-lg",
   "rounded-full",
   "shadow",
@@ -94,14 +94,14 @@ export function CodeInputPanel({
             onChange={(e) => setCurrentInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Enter Tailwind classes..."
-            className={`input-base input-focus w-full transition-all duration-200 ${
+            className={`input-base input-focus w-full transition-all duration-200 rounded-[25px] ${
               inputError ? "animate-shake border-red-500" : ""
             }`}
           />
 
           {/* Autocomplete Suggestions */}
           {currentInput && filteredSuggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg z-10 animate-slide-down">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-[25px] shadow-lg z-10 animate-slide-down">
               {filteredSuggestions.map((suggestion, index) => (
                 <button
                   key={suggestion}
@@ -127,7 +127,7 @@ export function CodeInputPanel({
               {appliedClasses.map((className, index) => (
                 <span
                   key={className}
-                  className={`inline-flex items-center space-x-1 bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs transition-all duration-200 hover:bg-primary/20 animate-scale-in stagger-${index + 1}`}
+                  className={`inline-flex items-center space-x-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-[25px] text-xs transition-all duration-200 hover:bg-primary/20 animate-scale-in stagger-${index + 1}`}
                 >
                   <span>{className}</span>
                   <button
@@ -153,7 +153,7 @@ export function CodeInputPanel({
       </button>
 
       {showCSS && (
-        <div className="bg-secondary p-3 rounded text-xs font-mono animate-slide-down">
+        <div className="bg-secondary p-3 rounded-[25px] text-xs font-mono animate-slide-down">
           <pre className="whitespace-pre-wrap">
             {appliedClasses.length === 0
               ? "/* No CSS generated */"

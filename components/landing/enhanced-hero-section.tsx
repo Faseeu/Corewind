@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Play, Sparkles } from "lucide-react"
+import { Play, Sparkles } from "lucide-react"
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { InteractiveLivePreview } from "./interactive-live-preview"
 
@@ -100,16 +100,18 @@ export function EnhancedHeroSection() {
 
             {/* Call to Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-in stagger-3">
-              <Link href="/learn">
-                <AnimatedButton size="lg" className="text-lg px-8 py-4 shadow-lg">
-                  Start Learning for Free
-                  <ArrowRight className="w-5 h-5" />
+              <Link href="/instant-learning">
+                <AnimatedButton size="lg" className="text-lg px-8 py-4 shadow-lg rounded-[25px]">
+                  <div className="flex flex-col items-center">
+                    <span>Get Started</span>
+                    <span className="text-xs opacity-75 font-normal">No sign up required</span>
+                  </div>
                 </AnimatedButton>
               </Link>
-              <Link href="/curriculum">
-                <AnimatedButton variant="secondary" size="lg" className="text-lg px-8 py-4">
+              <Link href="/roadmap/module-one">
+                <AnimatedButton variant="secondary" size="lg" className="text-lg px-8 py-4 rounded-[25px]">
                   <Play className="w-5 h-5" />
-                  Explore Curriculum
+                  Explore Roadmap
                 </AnimatedButton>
               </Link>
             </div>

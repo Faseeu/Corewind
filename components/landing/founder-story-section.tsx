@@ -95,7 +95,9 @@ export function FounderStorySection() {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Path to Corewind (And Yours Too!)</h2>
+            <h2 className="text-3xl md:text-4xl font-black mb-4 font-serif tracking-tight">
+              My Path to Corewind (And Yours Too!)
+            </h2>
             <p className="text-xl text-muted-foreground">
               The story behind why Corewind exists, and why it might be exactly what you need.
             </p>
@@ -115,7 +117,7 @@ export function FounderStorySection() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-foreground">{part.title}</h3>
+                  <h3 className="text-2xl font-black text-foreground font-serif tracking-tight">{part.title}</h3>
                   <div className="text-lg leading-relaxed text-muted-foreground">{part.content}</div>
                 </div>
               </div>
@@ -125,7 +127,7 @@ export function FounderStorySection() {
           {/* Closing message */}
           <div className="mt-16 text-center animate-fade-in stagger-6">
             <div className="bg-gradient-to-r from-primary/10 to-cyan-500/10 rounded-2xl p-8 border border-primary/20">
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed font-semibold">
                 This isn't just another learning platform—it's the tool I wish I had when I started. Built from
                 frustration, refined through experience, and shared with love.
               </p>

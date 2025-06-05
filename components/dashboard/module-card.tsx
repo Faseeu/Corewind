@@ -23,7 +23,7 @@ export function ModuleCard({ module, delay = 0 }: ModuleCardProps) {
 
   const isAccessible = status !== "locked"
   const CardWrapper = isAccessible ? Link : "div"
-  const href = isAccessible ? `/learn/${id}/level-1` : undefined
+  const href = isAccessible ? `/roadmap/module-one` : undefined
 
   return (
     <CardWrapper href={href}>

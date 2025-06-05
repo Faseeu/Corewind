@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Copy, Check } from "lucide-react"
+import { Copy, Check, Eye } from "lucide-react"
 import type React from "react"
 
 // Enhanced TypeScript interfaces
@@ -23,6 +23,7 @@ interface LivePreviewProps {
   starter_component_jsx?: string
   children?: string
   attributes?: Record<string, string>
+  targetClasses?: string[]
 }
 
 // Custom hook to track typewriter progress
@@ -287,27 +288,62 @@ const demoSequences: DemoSequence[] = [
   },
 ]
 
-// Enhanced LivePreview component
+// Enhanced LivePreview component styled like the instant learning page
 const LivePreview: React.FC<LivePreviewProps> = ({
   appliedClasses,
   component,
   starter_component_jsx,
   children,
   attributes = {},
+  targetClasses = [],
 }) => {
+  const [showTarget, setShowTarget] = useState(false)
   const Tag = component as keyof JSX.IntrinsicElements
-  const classString = appliedClasses.join(" ")
+  const className = appliedClasses.join(" ")
+  const targetClassName = targetClasses.join(" ")
+
+  const renderComponent = (classes: string) => {
+    return (
+      <Tag className={classes} {...attributes} dangerouslySetInnerHTML={children ? { __html: children } : undefined} />
+    )
+  }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-12 rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center min-h-[200px]">
-      <div className="text-center space-y-4">
-        <div className="text-xs text-gray-500 font-mono mb-2">Applied: {appliedClasses.length} classes</div>
-        <Tag
-          className={classString}
-          {...attributes}
-          dangerouslySetInnerHTML={children ? { __html: children } : undefined}
-        />
-        {appliedClasses.length === 0 && <div className="text-gray-400 text-sm">Component will appear here...</div>}
+    <div className="bg-slate-800 rounded-xl border border-slate-600 overflow-hidden">
+      {/* Header */}
+      <div className="bg-slate-700 px-6 py-4 border-b border-slate-600">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Eye className="w-5 h-5 text-blue-400" />
+            <span className="font-medium text-white">Live Preview</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Preview Area */}
+      <div className="p-8 min-h-[400px] bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="h-full flex items-center justify-center">
+          <div
+            className="transition-all duration-300 bg-white rounded-lg shadow-lg p-8 min-h-[200px] flex items-center justify-center relative"
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+            }}
+          >
+            {/* Your Result */}
+            <div className="relative">
+              {renderComponent(className)}
+              <div className="absolute -top-8 left-0 text-xs font-medium text-slate-600">Your Result</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Indicator */}
+      <div className="bg-slate-700 px-6 py-3 border-t border-slate-600">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-slate-400">Classes applied: {appliedClasses.length}</span>
+        </div>
       </div>
     </div>
   )
@@ -559,9 +595,7 @@ export function EnhancedSequentialLiveDemo() {
               <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
               <div className="w-3 h-3 bg-green-400 rounded-full"></div>
             </div>
-            <span className="text-sm font-medium text-gray-300">
-              {currentDemo.name.toLowerCase().replace(/\s+/g, "-")}.css
-            </span>
+            {/* Removed file name display as requested */}
           </div>
           <button
             onClick={handleCopyClasses}

@@ -30,7 +30,7 @@ const commonClasses = [
   "py-2",
   "px-6",
   "py-4",
-  "rounded",
+  "rounded-[25px]",
   "rounded-lg",
   "rounded-xl",
   "rounded-full",
@@ -74,7 +74,7 @@ export function ClassInput({ appliedClasses, onClassAdd, onClassRemove }: ClassI
 
   return (
     <div className="w-full">
-      <div className="bg-green-100 rounded-2xl p-6 h-full flex flex-col">
+      <div className="bg-green-100 rounded-[25px] p-6 h-full flex flex-col">
         {/* Applied Classes */}
         <div className="mb-4 flex-1">
           <div className="text-sm font-medium text-green-800 mb-3">Applied Classes</div>
@@ -85,7 +85,7 @@ export function ClassInput({ appliedClasses, onClassAdd, onClassRemove }: ClassI
               appliedClasses.map((className) => (
                 <span
                   key={className}
-                  className="inline-flex items-center px-3 py-1 bg-green-200 text-green-800 rounded-full text-sm font-mono group hover:bg-green-300 transition-colors duration-200"
+                  className="inline-flex items-center px-3 py-1 bg-green-200 text-green-800 rounded-[25px] text-sm font-mono group hover:bg-green-300 transition-colors duration-200"
                 >
                   {className}
                   <button
@@ -108,12 +108,12 @@ export function ClassInput({ appliedClasses, onClassAdd, onClassRemove }: ClassI
             onChange={(e) => setCurrentInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Tailwind classes go here"
-            className="w-full bg-white border-2 border-green-300 rounded-xl px-4 py-4 text-slate-800 placeholder-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-lg font-medium"
+            className="w-full bg-white border-2 border-green-300 rounded-[25px] px-4 py-4 text-slate-800 placeholder-green-500 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 text-lg font-medium"
           />
 
           {/* Suggestions */}
           {currentInput && filteredSuggestions.length > 0 && (
-            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-green-300 rounded-lg shadow-lg z-10 overflow-hidden">
+            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-green-300 rounded-[25px] shadow-lg z-10 overflow-hidden">
               {filteredSuggestions.map((suggestion) => (
                 <button
                   key={suggestion}

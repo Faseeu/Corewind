@@ -23,7 +23,7 @@ export function AnimatedButton({
 }: AnimatedButtonProps) {
   const [isPressed, setIsPressed] = useState(false)
 
-  const baseClasses = "relative overflow-hidden font-medium transition-all duration-200 button-press"
+  const baseClasses = "relative overflow-hidden font-medium transition-all duration-200 button-press rounded-[25px]"
 
   const variantClasses = {
     primary: "bg-primary text-primary-foreground hover:bg-primary/90 hover-glow",
@@ -31,9 +31,9 @@ export function AnimatedButton({
   }
 
   const sizeClasses = {
-    sm: "px-3 py-1.5 text-sm rounded-md",
-    md: "px-4 py-2 text-sm rounded-lg",
-    lg: "px-6 py-3 text-base rounded-lg",
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-3 text-base",
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
