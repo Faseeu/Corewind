@@ -1,17 +1,16 @@
-import { LearningInterface } from "@/components/learning/learning-interface"
+import { InstantLearning } from "@/components/instant-learning/instant-learning";
 
 interface LearningPageProps {
   params: {
-    moduleId: string
-    levelId: string // This will be used as lessonId
-  }
+    moduleId: string;
+    levelId: string; // This will be used as lessonId
+  };
 }
 
 export default function LearningPage({ params }: LearningPageProps) {
-  // Pass both moduleId and levelId (as lessonId) to LearningInterface
   return (
-    <div className="min-h-screen bg-background">
-      <LearningInterface moduleId={params.moduleId} lessonId={params.levelId} />
+    <div className="min-h-screen bg-background"> {/* Or decide to remove this wrapper */}
+      <InstantLearning moduleId={params.moduleId} lessonId={params.levelId} />
     </div>
-  )
+  );
 }
