@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo, useCallback, memo } from "react"
-import { LivePreview } from "@/components/learning/live-preview"
+import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react"
+// import { LivePreview } from "@/components/learning/live-preview" // Removed
 import Typewriter from "@/components/ui/typewriter"
 
 interface DemoSequence {
@@ -43,6 +43,56 @@ const demoSequences: DemoSequence[] = [
     component: "div",
   },
 ]
+
+// Simple dynamic element renderer
+interface DynamicElementProps {
+  appliedClasses: string[]
+  componentType: string
+  children: React.ReactNode
+}
+
+const DynamicElement = memo<DynamicElementProps>(({ appliedClasses, componentType, children }) => {
+  const className = appliedClasses.join(" ")
+  const baseClasses = "transition-all duration-300 ease-in-out" // Default transition
+  const combinedClasses = className ? `${baseClasses} ${className}` : baseClasses
+
+  switch (componentType) {
+    case "button":
+      return (
+        <button
+          className={
+            combinedClasses ||
+            `${baseClasses} px-6 py-3 bg-slate-200 text-slate-800 rounded-lg font-medium hover:bg-slate-300`
+          }
+        >
+          {children}
+        </button>
+      )
+    case "div":
+      return (
+        <div
+          className={
+            combinedClasses ||
+            `${baseClasses} w-40 h-40 bg-slate-200 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-300`
+          }
+        >
+          {children}
+        </div>
+      )
+    default:
+      return (
+        <div
+          className={
+            combinedClasses ||
+            `${baseClasses} w-40 h-40 bg-slate-200 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-300`
+          }
+        >
+          Element: {children}
+        </div>
+      )
+  }
+})
+DynamicElement.displayName = "DynamicElement"
 
 // Memoized Typewriter wrapper
 const OptimizedTypewriter = memo<{
@@ -210,11 +260,12 @@ export const SequentialLiveDemo = memo(() => {
 
           {/* Content area */}
           <div className="bg-white p-8 flex items-center justify-center min-h-[200px]">
-            <LivePreview
+            <DynamicElement
               appliedClasses={appliedClasses}
-              component={currentDemo.component}
-              starter_component_jsx={currentDemo.starter_component_jsx || "Your Box"}
-            />
+              componentType={currentDemo.component}
+            >
+              {currentDemo.starter_component_jsx || (currentDemo.component === "button" ? "Click Me" : "Your Box")}
+            </DynamicElement>
           </div>
 
           {/* Progress footer */}

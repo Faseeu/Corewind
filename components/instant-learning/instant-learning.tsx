@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { LearningHeader } from "./learning-header"
 import { TaskHeader } from "./task-header"
 import { MissionsCard } from "./missions-card"
@@ -10,14 +10,47 @@ import { ContinueButton } from "./continue-button"
 import { SuccessModal } from "./success-modal"
 import { curriculum } from "@/lib/curriculum"
 
-export function InstantLearning() {
+interface InstantLearningProps {
+  moduleId?: string
+  lessonId?: string
+}
+
+export function InstantLearning({ moduleId, lessonId }: InstantLearningProps) {
   const [currentModule, setCurrentModule] = useState(0)
   const [currentLesson, setCurrentLesson] = useState(0)
+  const [isPropDrivenMode, setIsPropDrivenMode] = useState(false)
   const [appliedClasses, setAppliedClasses] = useState<string[]>([])
   const [showSuccess, setShowSuccess] = useState(false)
   const [completedLessons, setCompletedLessons] = useState(0)
   const [streakCount, setStreakCount] = useState(1)
   const [isTransitioning, setIsTransitioning] = useState(false)
+
+  useEffect(() => {
+    setAppliedClasses([]) // Reset applied classes whenever props change or for initial load.
+    if (moduleId && lessonId) {
+      setIsPropDrivenMode(true)
+      const moduleIndex = curriculum.findIndex(module => module.id === moduleId)
+      if (moduleIndex !== -1) {
+        const lessonIndex = curriculum[moduleIndex].lessons.findIndex(lesson => lesson.id === lessonId)
+        if (lessonIndex !== -1) {
+          setCurrentModule(moduleIndex)
+          setCurrentLesson(lessonIndex)
+        } else {
+          console.warn(`Lesson not found for lessonId: ${lessonId} in module ${moduleId}`)
+          // Optionally, set to a "not found" state, e.g., setCurrentLesson(-1)
+          // For now, it will use the default/previous currentLesson, or 0 if curriculum is small
+        }
+      } else {
+        console.warn(`Module not found for moduleId: ${moduleId}`)
+        // Optionally, set to a "not found" state, e.g., setCurrentModule(-1)
+      }
+    } else {
+      setIsPropDrivenMode(false)
+      // Default behavior: load the first lesson of the first module
+      setCurrentModule(0)
+      setCurrentLesson(0)
+    }
+  }, [moduleId, lessonId, curriculum])
 
   const currentLessonData = curriculum[currentModule]?.lessons[currentLesson]
   const totalLessons = curriculum.reduce((acc, module) => acc + module.lessons.length, 0)
@@ -48,27 +81,56 @@ export function InstantLearning() {
 
   const handleNext = () => {
     if (checkCompletion()) {
-      setIsTransitioning(true)
-      setCompletedLessons((prev) => prev + 1)
-      setStreakCount((prev) => prev + 1)
-      setShowSuccess(true)
+      setIsTransitioning(true) // Start transition visual
+      setShowSuccess(true) // Show success modal
 
-      setTimeout(() => {
-        setShowSuccess(false)
-        setAppliedClasses([])
-
-        // Move to next lesson
-        if (currentLesson < curriculum[currentModule].lessons.length - 1) {
-          setCurrentLesson((prev) => prev + 1)
-        } else if (currentModule < curriculum.length - 1) {
-          setCurrentModule((prev) => prev + 1)
-          setCurrentLesson(0)
-        }
+      if (isPropDrivenMode) {
+        console.log("Prop-driven mode: Lesson complete. Navigation would happen here.")
+        // In prop-driven mode, we don't automatically advance the lesson within this component's state.
+        // The parent component or router would handle navigation to a new lesson/module via props.
+        // We still update completed count for this session if desired, though this might need context.
+        setCompletedLessons((prev) => prev + 1) // This might need re-evaluation in prop-driven context
+        setStreakCount((prev) => prev + 1) // Streaks could still be relevant
 
         setTimeout(() => {
+          setShowSuccess(false)
+          setAppliedClasses([]) // Reset classes for the completed lesson
+          // setIsTransitioning(false) // Transition ends after modal or potential navigation
+        }, 1500) // Time for modal display
+
+        // No internal state update for currentModule/currentLesson
+        // Visual transition ending needs to be handled carefully if not auto-advancing.
+        // For now, let's assume the parent will cause a re-render with new props,
+        // which will trigger useEffect and its own transition logic if any.
+        // If we want the transition visual to end here regardless:
+        setTimeout(() => {
           setIsTransitioning(false)
-        }, 300)
-      }, 1500)
+        }, 1800) // Slightly after modal closes
+
+      } else {
+        // Original logic for non-prop-driven mode
+        setCompletedLessons((prev) => prev + 1)
+        setStreakCount((prev) => prev + 1)
+
+        setTimeout(() => {
+          setShowSuccess(false)
+          setAppliedClasses([]) // Reset for the next lesson
+
+          // Move to next lesson
+          if (currentLesson < curriculum[currentModule].lessons.length - 1) {
+            setCurrentLesson((prev) => prev + 1)
+          } else if (currentModule < curriculum.length - 1) {
+            setCurrentModule((prev) => prev + 1)
+            setCurrentLesson(0)
+          }
+          // Else, curriculum complete (handled by UI or further logic)
+
+          // End transition after state updates and modal is gone
+          setTimeout(() => {
+            setIsTransitioning(false)
+          }, 300) // Short delay for state to apply and UI to react
+        }, 1500) // Time for modal display
+      }
     }
   }
 
