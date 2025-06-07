@@ -3,11 +3,12 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BookOpen, Menu, X } from "lucide-react"
+import { BookOpen, Menu, X, ChevronDown } from "lucide-react"
 import { AnimatedButton } from "@/components/ui/animated-button"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false)
   const pathname = usePathname()
 
   const isLandingPage = pathname === "/"
@@ -31,12 +32,42 @@ export function Header() {
           <Link href="/dashboard" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
             Dashboard
           </Link>
-          <Link
-            href="/roadmap/module-one"
-            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
-          >
-            Roadmap
-          </Link>
+
+          {/* Module Dropdown */}
+          <div className="relative">
+            <button
+              className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              onClick={() => setIsModuleDropdownOpen(!isModuleDropdownOpen)}
+            >
+              Roadmaps <ChevronDown className="w-4 h-4" />
+            </button>
+
+            {isModuleDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50">
+                <Link
+                  href="/roadmap/module-one"
+                  className="block px-4 py-2 hover:bg-muted transition-colors"
+                  onClick={() => setIsModuleDropdownOpen(false)}
+                >
+                  Module 1: Core Concepts
+                </Link>
+                <Link
+                  href="/roadmap/module-two"
+                  className="block px-4 py-2 hover:bg-muted transition-colors"
+                  onClick={() => setIsModuleDropdownOpen(false)}
+                >
+                  Module 2: Typography
+                </Link>
+                <Link
+                  href="/roadmap/module-three"
+                  className="block px-4 py-2 hover:bg-muted transition-colors"
+                  onClick={() => setIsModuleDropdownOpen(false)}
+                >
+                  Module 3: Flexbox
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Desktop CTA */}
@@ -81,13 +112,33 @@ export function Header() {
             >
               Dashboard
             </Link>
-            <Link
-              href="/roadmap/module-one"
-              className="block text-sm font-medium text-foreground hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Roadmap
-            </Link>
+
+            {/* Mobile Roadmap Links */}
+            <div className="pl-4 space-y-2 border-l-2 border-border/50">
+              <p className="text-sm font-medium text-foreground">Roadmaps</p>
+              <Link
+                href="/roadmap/module-one"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Module 1: Core Concepts
+              </Link>
+              <Link
+                href="/roadmap/module-two"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Module 2: Typography
+              </Link>
+              <Link
+                href="/roadmap/module-three"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Module 3: Flexbox
+              </Link>
+            </div>
+
             <div className="pt-4 space-y-2">
               <Link href="/instant-learning" onClick={() => setIsMenuOpen(false)}>
                 <AnimatedButton size="sm" className="w-full rounded-[25px]">
