@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback, memo } from "react"
 // import { LivePreview } from "@/components/learning/live-preview" // Removed
-import Typewriter from "@/components/ui/typewriter"
 
 interface DemoSequence {
   name: string
@@ -94,29 +93,7 @@ const DynamicElement = memo<DynamicElementProps>(({ appliedClasses, componentTyp
 })
 DynamicElement.displayName = "DynamicElement"
 
-// Memoized Typewriter wrapper
-const OptimizedTypewriter = memo<{
-  text: string
-  speed: number
-  onProgress: (length: number) => void
-  isPlaying: boolean
-  sequenceKey: number
-}>(({ text, speed, onProgress, isPlaying, sequenceKey }) => {
-  return (
-    <Typewriter
-      key={`${sequenceKey}-${isPlaying}`}
-      text={text}
-      speed={speed}
-      loop={false}
-      showCursor={true}
-      cursorChar="_"
-      className="break-all"
-      onProgress={onProgress}
-    />
-  )
-})
-
-OptimizedTypewriter.displayName = "OptimizedTypewriter"
+// Typewriter and OptimizedTypewriter component are removed.
 
 export const SequentialLiveDemo = memo(() => {
   const [currentSequence, setCurrentSequence] = useState(0)
@@ -150,8 +127,28 @@ export const SequentialLiveDemo = memo(() => {
   // Reset when sequence changes
   useEffect(() => {
     setAppliedClasses([])
-    setTypingProgress(0)
+    setTypingProgress(0) // Reset progress when sequence changes
   }, [currentSequence])
+
+  // Effect to simulate typing when Typewriter is removed
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout | undefined
+    if (isPlaying && typingProgress < fullClassString.length) {
+      progressInterval = setInterval(() => {
+        setTypingProgress((prev) => {
+          const nextProgress = prev + 1 // Simulate one character at a time
+          if (nextProgress >= fullClassString.length) {
+            clearInterval(progressInterval)
+            return fullClassString.length
+          }
+          return nextProgress
+        })
+      }, 50) // Adjust speed as needed, e.g., 50ms per character
+    } else if (progressInterval) { // Clear interval if not playing or typing complete
+      clearInterval(progressInterval)
+    }
+    return () => clearInterval(progressInterval)
+  }, [isPlaying, fullClassString, typingProgress]) // Rerun if isPlaying, fullClassString, or typingProgress changes
 
   // Optimized class matching using memoized positions
   useEffect(() => {
@@ -207,10 +204,10 @@ export const SequentialLiveDemo = memo(() => {
     setIsPlaying(true)
   }, [])
 
-  // Optimized progress handler
-  const handleTypewriterProgress = useCallback((currentLength: number) => {
-    setTypingProgress(currentLength)
-  }, [])
+  // Optimized progress handler - no longer needed as child callback
+  // const handleTypewriterProgress = useCallback((currentLength: number) => {
+  //   setTypingProgress(currentLength)
+  // }, [])
 
   const progressPercentage = useMemo(
     () => Math.min((typingProgress / fullClassString.length) * 100, 100),
@@ -304,20 +301,13 @@ export const SequentialLiveDemo = memo(() => {
 
         <div className="p-4 min-h-[80px] flex items-center">
           <div className="font-mono text-sm text-green-400 w-full">
-            {isPlaying ? (
-              <OptimizedTypewriter
-                text={fullClassString}
-                speed={20}
-                onProgress={handleTypewriterProgress}
-                isPlaying={isPlaying}
-                sequenceKey={currentSequence}
-              />
-            ) : (
-              <span className="break-all">
-                {fullClassString.slice(0, typingProgress)}
+            <span className="break-all">
+              {fullClassString.slice(0, typingProgress)}
+              {/* Show cursor if playing and not yet complete, or if paused */}
+              {(isPlaying && typingProgress < fullClassString.length) || !isPlaying ? (
                 <span className="animate-pulse">_</span>
-              </span>
-            )}
+              ) : null}
+            </span>
           </div>
         </div>
       </div>
