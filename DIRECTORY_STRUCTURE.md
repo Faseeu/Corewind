@@ -3,7 +3,7 @@
 This document outlines the organized directory structure for the Corewind project, ensuring maintainability and scalability.
 
 ## Root Structure
-\`\`\`
+\`\`\`text
 corewind/
 ├── app/                          # Next.js App Router pages
 ├── components/                   # React components organized by feature
@@ -16,7 +16,7 @@ corewind/
 ## Detailed Component Organization
 
 ### `/components/`
-\`\`\`
+\`\`\`text
 components/
 ├── ui/                          # Reusable UI components
 │   ├── animated-button.tsx
@@ -76,7 +76,7 @@ components/
 \`\`\`
 
 ### `/lib/`
-\`\`\`
+\`\`\`text
 lib/
 ├── curriculum/                  # Curriculum data
 │   ├── module1.ts
@@ -87,7 +87,7 @@ lib/
 \`\`\`
 
 ### `/app/`
-\`\`\`
+\`\`\`text
 app/
 ├── dashboard/
 │   └── page.tsx
