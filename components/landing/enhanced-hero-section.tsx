@@ -108,7 +108,7 @@ export function EnhancedHeroSection() {
                   </div>
                 </AnimatedButton>
               </Link>
-              <Link href="/roadmap/module-one">
+              <Link href="/roadmap">
                 <AnimatedButton variant="secondary" size="lg" className="text-lg px-8 py-4 rounded-[25px]">
                   <Play className="w-5 h-5" />
                   Explore Roadmap

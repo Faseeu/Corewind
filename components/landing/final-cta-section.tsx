@@ -25,7 +25,7 @@ export function FinalCTASection() {
                   </div>
                 </AnimatedButton>
               </Link>
-              <Link href="/curriculum">
+              <Link href="/roadmap">
                 <AnimatedButton variant="secondary" size="lg" className="text-lg px-8 py-4 rounded-[25px]">
                   <BookOpen className="w-5 h-5" />
                   View All Learning Paths
