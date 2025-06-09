@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { BookOpen, Menu, X, ChevronDown } from "lucide-react"
 import { AnimatedButton } from "@/components/ui/animated-button"
+import { curriculum } from "@/lib/curriculum"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -43,28 +44,17 @@ export function Header() {
             </button>
 
             {isModuleDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50">
-                <Link
-                  href="/roadmap/module-one"
-                  className="block px-4 py-2 hover:bg-muted transition-colors"
-                  onClick={() => setIsModuleDropdownOpen(false)}
-                >
-                  Module 1: Core Concepts
-                </Link>
-                <Link
-                  href="/roadmap/module-two"
-                  className="block px-4 py-2 hover:bg-muted transition-colors"
-                  onClick={() => setIsModuleDropdownOpen(false)}
-                >
-                  Module 2: Typography
-                </Link>
-                <Link
-                  href="/roadmap/module-three"
-                  className="block px-4 py-2 hover:bg-muted transition-colors"
-                  onClick={() => setIsModuleDropdownOpen(false)}
-                >
-                  Module 3: Flexbox
-                </Link>
+              <div className="absolute top-full left-0 mt-2 w-auto max-w-xs bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50">
+                {curriculum.map((module) => (
+                  <Link
+                    key={module.id}
+                    href={`/roadmap/${module.id}`}
+                    className="block px-4 py-2 text-sm hover:bg-muted transition-colors whitespace-nowrap"
+                    onClick={() => setIsModuleDropdownOpen(false)}
+                  >
+                    {module.main_title}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
@@ -116,27 +106,16 @@ export function Header() {
             {/* Mobile Roadmap Links */}
             <div className="pl-4 space-y-2 border-l-2 border-border/50">
               <p className="text-sm font-medium text-foreground">Roadmaps</p>
-              <Link
-                href="/roadmap/module-one"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Module 1: Core Concepts
-              </Link>
-              <Link
-                href="/roadmap/module-two"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Module 2: Typography
-              </Link>
-              <Link
-                href="/roadmap/module-three"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Module 3: Flexbox
-              </Link>
+              {curriculum.map((module) => (
+                <Link
+                  key={module.id}
+                  href={`/roadmap/${module.id}`}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {module.main_title}
+                </Link>
+              ))}
             </div>
 
             <div className="pt-4 space-y-2">
