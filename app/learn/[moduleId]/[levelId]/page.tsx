@@ -1,3 +1,4 @@
+"use client";
 import { LearningInterface } from "@/components/learning/learning-interface"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
 

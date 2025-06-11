@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link"
 import { curriculum } from "@/lib/curriculum"
 import { AnimatedCard } from "@/components/ui/animated-card"

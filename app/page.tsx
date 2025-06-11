@@ -1,3 +1,4 @@
+"use client";
 import { LinearLandingPage } from "@/components/landing/linear-landing-page"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
 

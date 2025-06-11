@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { LearningHeader } from "./learning-header"
 import { TaskHeader } from "./task-header"
 import { MissionsCard } from "./missions-card"
@@ -24,6 +24,14 @@ export function InstantLearning({ moduleId, lessonId }: InstantLearningProps) {
   const [completedLessons, setCompletedLessons] = useState(0)
   const [streakCount, setStreakCount] = useState(1)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    isMountedRef.current = true // Set to true when component mounts or re-renders
+    return () => {
+      isMountedRef.current = false // Set to false when component unmounts
+    }
+  }, []) // Empty dependency array ensures this runs only on mount and unmount
 
   useEffect(() => {
     setAppliedClasses([]) // Reset applied classes whenever props change or for initial load.
@@ -93,8 +101,10 @@ export function InstantLearning({ moduleId, lessonId }: InstantLearningProps) {
         setStreakCount((prev) => prev + 1) // Streaks could still be relevant
 
         setTimeout(() => {
-          setShowSuccess(false)
-          setAppliedClasses([]) // Reset classes for the completed lesson
+          if (isMountedRef.current) {
+            setShowSuccess(false)
+            setAppliedClasses([]) // Reset classes for the completed lesson
+          }
           // setIsTransitioning(false) // Transition ends after modal or potential navigation
         }, 1500) // Time for modal display
 
@@ -104,7 +114,9 @@ export function InstantLearning({ moduleId, lessonId }: InstantLearningProps) {
         // which will trigger useEffect and its own transition logic if any.
         // If we want the transition visual to end here regardless:
         setTimeout(() => {
-          setIsTransitioning(false)
+          if (isMountedRef.current) {
+            setIsTransitioning(false)
+          }
         }, 1800) // Slightly after modal closes
 
       } else {
@@ -113,21 +125,25 @@ export function InstantLearning({ moduleId, lessonId }: InstantLearningProps) {
         setStreakCount((prev) => prev + 1)
 
         setTimeout(() => {
-          setShowSuccess(false)
-          setAppliedClasses([]) // Reset for the next lesson
+          if (isMountedRef.current) {
+            setShowSuccess(false)
+            setAppliedClasses([]) // Reset for the next lesson
 
-          // Move to next lesson
-          if (currentLesson < curriculum[currentModule].lessons.length - 1) {
-            setCurrentLesson((prev) => prev + 1)
-          } else if (currentModule < curriculum.length - 1) {
-            setCurrentModule((prev) => prev + 1)
-            setCurrentLesson(0)
+            // Move to next lesson
+            if (currentLesson < curriculum[currentModule].lessons.length - 1) {
+              setCurrentLesson((prev) => prev + 1)
+            } else if (currentModule < curriculum.length - 1) {
+              setCurrentModule((prev) => prev + 1)
+              setCurrentLesson(0)
+            }
+            // Else, curriculum complete (handled by UI or further logic)
           }
-          // Else, curriculum complete (handled by UI or further logic)
 
           // End transition after state updates and modal is gone
           setTimeout(() => {
-            setIsTransitioning(false)
+            if (isMountedRef.current) {
+              setIsTransitioning(false)
+            }
           }, 300) // Short delay for state to apply and UI to react
         }, 1500) // Time for modal display
       }

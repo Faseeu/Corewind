@@ -1,3 +1,4 @@
+"use client";
 import { WelcomeHeader } from "@/components/dashboard/welcome-header"
 import { ContinueLearning } from "@/components/dashboard/continue-learning"
 import { ModulesOverview } from "@/components/dashboard/modules-overview"
